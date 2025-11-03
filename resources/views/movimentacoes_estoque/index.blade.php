@@ -42,7 +42,7 @@
                             <tbody>
                                 @forelse ($movimentacoes as $movimentacao)
                                 <tr>
-                                    <td>{{ \Carbon\Carbon::parse($movimentacao->created_at)->format('d/m/Y H:i') }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($movimentacao->created_at)->format('d/m/Y') }}</td>
                                     <td>
                                         <span class="badge {{ $movimentacao->tipo_movimentacao == 'entrada' ? 'bg-primary' : 'bg-secondary' }}">
                                             {{ ucfirst($movimentacao->tipo_movimentacao) }}

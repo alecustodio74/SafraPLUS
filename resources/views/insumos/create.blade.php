@@ -32,7 +32,7 @@
 
                         <div class="mb-3">
                             <label for="estoque_atual" class="form-label">Estoque Inicial (Opcional)</label>
-                            <input type="number" step="0.01" name="estoque_atual" id="estoque_atual" class="form-control" value="0.00" placeholder="50">
+                            <input type="number" step="0.01" name="estoque_atual" id="estoque_atual" class="form-control" placeholder="50">
                         </div>
 
                         <div class="d-flex justify-content-between">
