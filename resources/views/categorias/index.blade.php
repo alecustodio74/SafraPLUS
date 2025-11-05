@@ -31,7 +31,7 @@
                                     <th>Nome</th>
                                     <th>Tipo</th>
                                     @can('is-admin')
-                                        <th>Produtor</th>
+                                    <th>Produtor</th>
                                     @endcan
                                     <th style="width: 150px;">Ações</th>
                                 </tr>
@@ -42,7 +42,7 @@
                                     <td>{{ $categoria->nome }}</td>
                                     <td>{{ ucfirst($categoria->tipo_receita_despesa) }}</td>
                                     @can('is-admin')
-                                        <td>{{ $categoria->produtor->nome ?? 'N/A' }}</td>
+                                    <td>{{ $categoria->produtor->nome ?? 'N/A' }}</td>
                                     @endcan
                                     <td>
                                         <a href="{{ route('categorias.edit', $categoria->id) }}" class="btn btn-sm btn-warning">Editar</a>

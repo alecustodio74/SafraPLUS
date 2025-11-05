@@ -9,13 +9,12 @@ class CustoOperacional extends Model
 {
     use HasFactory;
 
-    // Assumindo que o nome da tabela seja 'custos_operacionais'
-    protected $table = 'custos_operacionais'; 
+    protected $table = 'custos_operacionais';
 
     protected $fillable = [
         'safra_id',
-        'maquinario_id', // Nulo se for Mão de Obra
-        'mao_de_obra_id', // Nulo se for Maquinário
+        'maquinario_id',
+        'mao_de_obra_id',
         'data',
         'descricao',
         'valor',

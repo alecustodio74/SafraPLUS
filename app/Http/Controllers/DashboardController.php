@@ -7,7 +7,7 @@ use App\Models\Safra;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class DashboardController extends Controller 
+class DashboardController extends Controller
 {
     public function index()
     {
@@ -15,31 +15,31 @@ class DashboardController extends Controller
         $receitasTotais = 0;
         $despesasTotais = 0;
         $saldoAtual = 0;
-        $safrasRecentes = null; // RENOMEADO AQUI
+        $safrasRecentes = null;
 
         if ($usuarioLogado->can('is-admin')) {
             $receitasTotais = LancamentoFinanceiro::where('tipo_receita_custo', 'receita')->sum('valor_total');
             $despesasTotais = LancamentoFinanceiro::where('tipo_receita_custo', 'custo')->sum('valor_total');
-            
-            $safrasRecentes = Safra::orderBy('data_inicio', 'desc')->take(5)->get(); // RENOMEADO AQUI
+
+            $safrasRecentes = Safra::orderBy('data_inicio', 'desc')->take(5)->get();
         } else {
             $safraIds = $usuarioLogado->safras->pluck('id');
 
             $receitasTotais = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-                                                 ->where('tipo_receita_custo', 'receita')
-                                                 ->sum('valor_total');
-                                                 
-            $despesasTotais = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-                                                 ->where('tipo_receita_custo', 'custo')
-                                                 ->sum('valor_total');
+                ->where('tipo_receita_custo', 'receita')
+                ->sum('valor_total');
 
-            $safrasRecentes = $usuarioLogado->safras() // RENOMEADO AQUI
-                                              ->orderBy('data_inicio', 'desc')
-                                              ->take(5)->get();
+            $despesasTotais = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
+                ->where('tipo_receita_custo', 'custo')
+                ->sum('valor_total');
+
+            $safrasRecentes = $usuarioLogado->safras()
+                ->orderBy('data_inicio', 'desc')
+                ->take(5)->get();
         }
 
         $saldoAtual = $receitasTotais - $despesasTotais;
-        
-        return view('painel', compact('receitasTotais', 'despesasTotais', 'saldoAtual', 'safrasRecentes')); // RENOMEADO AQUI
+
+        return view('painel', compact('receitasTotais', 'despesasTotais', 'saldoAtual', 'safrasRecentes'));
     }
 }

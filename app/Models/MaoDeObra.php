@@ -22,9 +22,6 @@ class MaoDeObra extends Model
         'custo_diario_hora',
     ];
 
-    /**
-     * Get the produtor that owns the mao de obra.
-     */
     public function produtor()
     {
         return $this->belongsTo(Produtor::class, 'produtor_id');

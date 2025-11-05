@@ -21,8 +21,8 @@ class CustoOperacionalController extends Controller
         } else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $custos = CustoOperacional::whereIn('safra_id', $safraIds)
-                                      ->with('safra', 'maquinario', 'maoDeObra')
-                                      ->get();
+                ->with('safra', 'maquinario', 'maoDeObra')
+                ->get();
         }
 
         return view('custos_operacionais.index', compact('custos'));
@@ -44,15 +44,14 @@ class CustoOperacionalController extends Controller
             $maquinarios = $usuarioLogado->maquinarios;
             $maoDeObras = $usuarioLogado->maoDeObras;
         }
-        
+
         return view('custos_operacionais.create', compact('safras', 'maquinarios', 'maoDeObras'));
     }
 
     public function store(Request $request)
     {
         $usuarioLogado = Auth::user();
-        
-        // VALIDAÇÃO ADICIONADA (Este era o problema)
+
         $dados = $request->validate([
             'safra_id' => 'required|exists:safras,id',
             'descricao' => 'required|string|max:255',
@@ -62,11 +61,10 @@ class CustoOperacionalController extends Controller
             'mao_de_obra_id' => 'nullable|exists:mao_de_obra,id',
         ]);
 
-        // Verificação de Permissão (Segurança)
         if ($usuarioLogado->can('is-produtor')) {
             $usuarioLogado->safras()->findOrFail($request->safra_id);
         }
-        
+
         CustoOperacional::create($dados);
 
         return redirect()->route('custos-operacionais.index')->with('success', 'Custo operacional criado com sucesso!');
@@ -88,7 +86,7 @@ class CustoOperacionalController extends Controller
         } else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
-            
+
             $safras = $usuarioLogado->safras;
             $maquinarios = $usuarioLogado->maquinarios;
             $maoDeObras = $usuarioLogado->maoDeObras;
@@ -109,7 +107,6 @@ class CustoOperacionalController extends Controller
             $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
         }
 
-        // VALIDAÇÃO ADICIONADA
         $dados = $request->validate([
             'safra_id' => 'required|exists:safras,id',
             'descricao' => 'required|string|max:255',
@@ -135,7 +132,7 @@ class CustoOperacionalController extends Controller
             $safraIds = $usuarioLogado->safras->pluck('id');
             $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
         }
-        
+
         $custo->delete();
 
         return redirect()->route('custos-operacionais.index')->with('success', 'Custo operacional excluído com sucesso!');

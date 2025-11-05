@@ -50,14 +50,6 @@
                             <input type="text" name="cultura_principal" id="cultura_principal" class="form-control" value="{{ $produtor->cultura_principal }}" placeholder="Arroz / Milho / Soja">
                         </div>
 
-                        <div class="mb-3">
-                            <label for="role" class="form-label">Tipo de Usuário</label>
-                            <select name="role" id="role" class="form-select" required>
-                                <option value="produtor" {{ $produtor->role == 'produtor' ? 'selected' : '' }}>Produtor</option>
-                                <option value="admin" {{ $produtor->role == 'admin' ? 'selected' : '' }}>Administrador</option>
-                            </select>
-                        </div>
-
                         <div class="d-flex justify-content-between">
                             <a href="{{ route('produtores.index') }}" class="btn btn-secondary">Voltar</a>
                             <button type="submit" class="btn btn-success">Salvar Alterações</button>

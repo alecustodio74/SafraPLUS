@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <form action="{{ route('administradores.store') }}" method="POST">
                         @csrf
-                        
+
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome Completo</label>
                             <input type="text" name="nome" id="nome" class="form-control" required placeholder="Carlos Albuquerque Dias">
@@ -27,7 +27,7 @@
                             <label for="password" class="form-label">Senha</label>
                             <input type="password" name="password" id="password" class="form-control" required placeholder="********">
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="cpf_cnpj" class="form-label">CPF / CNPJ (apenas número)</label>

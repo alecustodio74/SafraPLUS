@@ -46,7 +46,6 @@
                         <a class="navbar-brand" href="{{ route('painel') }}">
                             <img src="{{ asset('images/logo.png') }}" alt="Logo SafraPLUS" style="width: 80px; height: auto; filter: brightness(0) invert(1);">
                         </a>
-                        <!-- o filter permite mudar a cor da imagem de verde para branco -->
                     </a>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">

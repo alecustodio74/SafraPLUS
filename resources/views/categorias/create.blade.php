@@ -13,7 +13,6 @@
                     <form action="{{ route('categorias.store') }}" method="POST">
                         @csrf
 
-                        {{-- OPÇÂO PARA ADMIN --}}
                         @can('is-admin')
                         <div class="mb-3">
                             <label for="produtor_id" class="form-label">Produtor</label>
@@ -25,7 +24,6 @@
                             </select>
                         </div>
                         @endcan
-                        {{-- FIM DA OPÇÂO DO ADMIN --}}
 
                         <div class="mb-3">
                             <label for="nome" class="form-label">Nome da Categoria</label>

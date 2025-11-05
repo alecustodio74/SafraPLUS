@@ -21,7 +21,7 @@ class Produtor extends Authenticatable
         'telefone',
         'propriedade',
         'cultura_principal',
-        'role', // <-- Adicionado
+        'role',
     ];
 
     /**
@@ -44,7 +44,6 @@ class Produtor extends Authenticatable
         'password' => 'hashed',
     ];
 
-    // --- RELAÇÕES ---
 
     public function safras()
     {

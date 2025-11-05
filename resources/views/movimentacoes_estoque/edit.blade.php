@@ -34,13 +34,13 @@
                             <select name="insumo_id" id="insumo_id" class="form-select" required>
                                 <option value="">Selecione um insumo</option>
                                 @foreach($insumos as $insumo)
-                                    <option value="{{ $insumo->id }}" {{ $movimentacao->insumo_id == $insumo->id ? 'selected' : '' }}>
-                                        {{ $insumo->nome }} (Estoque: {{ $insumo->estoque_atual }})
-                                    </option>
+                                <option value="{{ $insumo->id }}" {{ $movimentacao->insumo_id == $insumo->id ? 'selected' : '' }}>
+                                    {{ $insumo->nome }} (Estoque: {{ $insumo->estoque_atual }})
+                                </option>
                                 @endforeach
                             </select>
                         </div>
-                        
+
                         <div class="mb-3">
                             <label for="quantidade" class="form-label">Quantidade</label>
                             <input type="number" step="0.01" name="quantidade" id="quantidade" class="form-control" value="{{ $movimentacao->quantidade }}" required>
@@ -56,9 +56,9 @@
                             <select name="safra_id" id="safra_id" class="form-select">
                                 <option value="">Nenhuma</option>
                                 @foreach($safras as $safra)
-                                    <option value="{{ $safra->id }}" {{ $movimentacao->safra_id == $safra->id ? 'selected' : '' }}>
-                                        {{ $safra->cultura }} (Início: {{ $safra->data_inicio }})
-                                    </option>
+                                <option value="{{ $safra->id }}" {{ $movimentacao->safra_id == $safra->id ? 'selected' : '' }}>
+                                    {{ $safra->cultura }} (Início: {{ $safra->data_inicio }})
+                                </option>
                                 @endforeach
                             </select>
                         </div>
@@ -83,8 +83,8 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        
+    document.addEventListener('DOMContentLoaded', function() {
+
         const tipoMovimentacao = document.getElementById('tipo_movimentacao');
         const valorUnitarioWrapper = document.getElementById('valor_unitario_wrapper');
         const safraIdWrapper = document.getElementById('safra_id_wrapper');
@@ -112,8 +112,8 @@
             }
         }
         tipoMovimentacao.addEventListener('change', toggleFields);
-        
-        toggleFields(); 
+
+        toggleFields();
     });
 </script>
 @endsection

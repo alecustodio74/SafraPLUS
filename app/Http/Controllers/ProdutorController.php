@@ -9,10 +9,6 @@ use Illuminate\Validation\Rules;
 
 class ProdutorController extends Controller
 {
-    /**
-     * Garante que apenas Admins acessem este controller.
-     */
-
     public function index()
     {
         $produtores = Produtor::where('role', 'produtor')->get();
@@ -28,21 +24,23 @@ class ProdutorController extends Controller
     {
         $request->validate([
             'nome' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.Produtor::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . Produtor::class],
             'password' => ['required', Rules\Password::defaults()],
-            'cpf_cnpj' => ['required', 'string', 'max:20', 'unique:'.Produtor::class],
-            'role' => ['required', 'string', 'in:admin,produtor'],
+            'cpf_cnpj' => ['required', 'string', 'max:20', 'unique:' . Produtor::class],
+            'propriedade' => ['nullable', 'string', 'max:255'],
+            'cultura_principal' => ['nullable', 'string', 'max:100'],
+            'telefone' => ['nullable', 'string', 'max:20'],
         ]);
 
         Produtor::create([
             'nome' => $request->nome,
             'email' => $request->email,
-            'password' => $request->password, // Model já faz o hash
+            'password' => $request->password,
             'cpf_cnpj' => $request->cpf_cnpj,
             'propriedade' => $request->propriedade,
             'cultura_principal' => $request->cultura_principal,
             'telefone' => $request->telefone,
-            'role' => $request->role,
+            'role' => 'produtor',
         ]);
 
         return redirect()->route('produtores.index')->with('success', 'Produtor criado com sucesso!');
@@ -55,14 +53,23 @@ class ProdutorController extends Controller
 
     public function update(Request $request, Produtor $produtor)
     {
-        $dados = $request->except(['_token', '_method', 'password']);
+        $request->validate([
+            'nome' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:produtores,email,' . $produtor->id],
+            'cpf_cnpj' => ['required', 'string', 'max:20', 'unique:produtores,cpf_cnpj,' . $produtor->id],
+            'propriedade' => ['nullable', 'string', 'max:255'],
+            'cultura_principal' => ['nullable', 'string', 'max:100'],
+            'telefone' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        $dados = $request->except(['_token', '_method', 'password', 'role']);
 
         if ($request->filled('password')) {
-            $dados['password'] = $request->password; // Model já faz o hash
+            $dados['password'] = $request->password;
         }
 
         $produtor->update($dados);
-        
+
         return redirect()->route('produtores.index')->with('success', 'Produtor atualizado com sucesso!');
     }
 

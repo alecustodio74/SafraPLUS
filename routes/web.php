@@ -28,19 +28,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
     Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.edit_password');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update_password');
 
     Route::resource('produtores', ProdutorController::class)
-         ->parameters(['produtores' => 'produtor'])
-         ->middleware('can:is-admin'); 
+        ->parameters(['produtores' => 'produtor'])
+        ->middleware('can:is-admin');
 
-    Route::resource('administradores', AdministradorController::class) 
-         ->parameters(['administradores' => 'administrador'])
-         ->except(['show'])
-         ->middleware('can:is-admin');
-         
+    Route::resource('administradores', AdministradorController::class)
+        ->parameters(['administradores' => 'administrador'])
+        ->except(['show'])
+        ->middleware('can:is-admin');
+
     Route::resource('safras', SafraController::class);
     Route::resource('categorias', CategoriaController::class);
     Route::resource('insumos', InsumoController::class);

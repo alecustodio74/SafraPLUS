@@ -22,9 +22,6 @@ class Categoria extends Model
         'tipo_receita_despesa',
     ];
 
-    /**
-     * Get the produtor that owns the categoria.
-     */
     public function produtor()
     {
         return $this->belongsTo(Produtor::class, 'produtor_id');

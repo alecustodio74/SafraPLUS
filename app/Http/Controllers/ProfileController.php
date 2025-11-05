@@ -12,9 +12,6 @@ use Illuminate\Http\RedirectResponse;
 
 class ProfileController extends Controller
 {
-    /**
-     * Mostra o formulário de edição de perfil.
-     */
     public function edit(Request $request)
     {
         return view('profile.edit', [
@@ -29,8 +26,8 @@ class ProfileController extends Controller
 
         $request->validate([
             'nome' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:produtores,email,'.$user->id], 
-            'cpf_cnpj' => ['required', 'string', 'max:20', 'unique:produtores,cpf_cnpj,'.$user->id],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:produtores,email,' . $user->id],
+            'cpf_cnpj' => ['required', 'string', 'max:20', 'unique:produtores,cpf_cnpj,' . $user->id],
             'telefone' => ['nullable', 'string', 'max:20'],
             'propriedade' => ['nullable', 'string', 'max:255'],
             'cultura_principal' => ['nullable', 'string', 'max:100'],
@@ -40,11 +37,11 @@ class ProfileController extends Controller
 
         return Redirect::route('profile.edit')->with('success', 'Perfil atualizado com sucesso!');
     }
-    
+
 
     public function editPassword(Request $request)
     {
-        return view('profile.edit-password'); 
+        return view('profile.edit-password');
     }
 
     public function updatePassword(Request $request)
@@ -52,8 +49,8 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $request->validate([
-            'current_password' => ['required', 'current_password'], 
-            'password' => ['required', Rules\Password::defaults(), 'confirmed'], 
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', Rules\Password::defaults(), 'confirmed'],
         ]);
 
         $user->update([

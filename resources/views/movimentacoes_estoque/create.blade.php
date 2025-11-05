@@ -10,7 +10,6 @@
                 </div>
                 <div class="card-body bg-light">
                     
-                    {{-- CÓDIGO DE ALERTA ADICIONADO AQUI --}}
                     @if (session('error'))
                     <div class="alert alert-danger" role="alert">
                         {{ session('error') }}
@@ -38,7 +37,6 @@
                                 <option value="" disabled {{ old('insumo_id') ? '' : 'selected' }}>Selecione um Insumo</option>
                                 @foreach($insumos as $insumo)
                                 <option value="{{ $insumo->id }}" {{ old('insumo_id') == $insumo->id ? 'selected' : '' }}>
-                                    {{-- Nomes de coluna corrigidos para bater com o Model --}}
                                     {{ $insumo->nome }} (Estoque: {{ $insumo->estoque_atual }})
                                 </option>
                                 @endforeach
@@ -96,7 +94,6 @@
     </div>
 </div>
 
-{{-- SCRIPT PARA FORMULÁRIO DINÂMICO (JÁ ESTÁ CORRETO) --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const tipoMovimentacao = document.getElementById('tipo_movimentacao');

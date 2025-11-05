@@ -13,8 +13,8 @@ class MovimentacaoEstoque extends Model
 
     protected $fillable = [
         'insumo_id',
-        'safra_id', // Deve ser null (nulo) em "Entrada por Compra"
-        'tipo_movimentacao', // Ex: 'entrada' ou 'saida'
+        'safra_id',
+        'tipo_movimentacao',
         'quantidade',
         'valor_unitario',
     ];

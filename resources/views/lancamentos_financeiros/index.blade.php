@@ -35,7 +35,7 @@
                                     <th>Tipo</th>
                                     <th>Valor</th>
                                     @can('is-admin')
-                                        <th>Produtor</th>
+                                    <th>Produtor</th>
                                     @endcan
                                     <th style="width: 150px;">Ações</th>
                                 </tr>
@@ -54,7 +54,7 @@
                                     </td>
                                     <td>R$ {{ number_format($lancamento->valor_total, 2, ',', '.') }}</td>
                                     @can('is-admin')
-                                        <td>{{ $lancamento->safra->produtor->nome ?? 'N/A' }}</td>
+                                    <td>{{ $lancamento->safra->produtor->nome ?? 'N/A' }}</td>
                                     @endcan
                                     <td>
                                         <a href="{{ route('lancamentos-financeiros.edit', $lancamento->id) }}" class="btn btn-sm btn-warning">Editar</a>

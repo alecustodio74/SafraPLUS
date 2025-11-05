@@ -31,7 +31,7 @@
                                     <th>Nome do Insumo</th>
                                     <th>Estoque Atual</th>
                                     @can('is-admin')
-                                        <th>Produtor</th>
+                                    <th>Produtor</th>
                                     @endcan
                                     <th style="width: 150px;">Ações</th>
                                 </tr>
@@ -42,7 +42,7 @@
                                     <td>{{ $insumo->nome }}</td>
                                     <td>{{ number_format($insumo->estoque_atual, 2, ',', '.') }}</td>
                                     @can('is-admin')
-                                        <td>{{ $insumo->produtor->nome ?? 'N/A' }}</td>
+                                    <td>{{ $insumo->produtor->nome ?? 'N/A' }}</td>
                                     @endcan
                                     <td>
                                         <a href="{{ route('insumos.edit', $insumo->id) }}" class="btn btn-sm btn-warning">Editar</a>
