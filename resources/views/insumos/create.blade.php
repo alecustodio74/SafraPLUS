@@ -31,7 +31,7 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="estoque_atual" class="form-label">Estoque Inicial (Opcional)</label>
+                            <label for="estoque_atual" class="form-label">Estoque Atual (Opcional)</label>
                             <input type="number" step="0.01" name="estoque_atual" id="estoque_atual" class="form-control" placeholder="50">
                         </div>
 
