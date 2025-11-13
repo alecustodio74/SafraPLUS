@@ -1,9 +1,9 @@
-#🌾 SafraPLUS - Gestão Financeira para Produtores Rurais
+# 🌾 SafraPLUS - Gestão Financeira para Produtores Rurais
 O SafraPLUS é um sistema web para gerenciamento financeiro, de safras e de estoque focado no produtor rural. Ele permite o registro detalhado de custos e receitas, vinculando-os obrigatoriamente a um ciclo produtivo (safra) para o cálculo preciso da lucratividade.
 
 Este projeto foi desenvolvido como um trabalho acadêmico para a disciplina de Eletiva II Programação Web (5º Termo) da Fatec Presidente Prudente.
 
-#✨ Funcionalidades Principais
+# ✨ Funcionalidades Principais
 O sistema foi construído com uma arquitetura multi-usuário (multi-tenant) que separa as permissões em dois níveis:
 
 **1. Funções do Produtor (Usuário Comum)**
@@ -37,4 +37,4 @@ O Admin possui todas as funções do Produtor e, adicionalmente:
 * Autenticação: Laravel Breeze (para Login, Registro e Gerenciamento de Perfil)
 * Controle de Versão: Git & GitHub
 
-#📷 Telas do Sistema
+# 📷 Telas do Sistema
