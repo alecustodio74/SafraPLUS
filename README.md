@@ -38,4 +38,14 @@ O Admin possui todas as funções do Produtor e, adicionalmente:
 * Controle de Versão: Git & GitHub
 
 # 📷 Telas do Sistema
-![Screenshot da tela de Login](Image/painel.png)
+![Screenshot da tela Principal](Image/painel.png)
+![Screenshot da tela de Safras](Image/safras.png)
+![Screenshot da tela de Estoque Index](Image/estoque_index.png)
+![Screenshot da tela de Estoque](Image/estoque.png)
+![Screenshot da tela de Custo Operacional](Image/custo_op.png)
+![Screenshot da tela de Lançamento Financerio Index](Image/lancamento_financeiro_index.png)
+![Screenshot da tela de Lançamento Financerio](Image/lancamento_financeiro.png)
+![Screenshot da tela de Produtor](Image/produtor.png)
+![Screenshot da tela de Administrador](Image/administrador.png)
+![Screenshot da tela de Relatorio](Image/relatorio.png)
+![Screenshot da tela de perfil](Image/perfil.png)
