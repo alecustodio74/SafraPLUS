@@ -1,61 +1,66 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+🌾 SafraPLUS - Gestão Financeira para Produtores Rurais
+O SafraPLUS é um sistema web para gerenciamento financeiro, de safras e de estoque focado no produtor rural. Ele permite o registro detalhado de custos e receitas, vinculando-os obrigatoriamente a um ciclo produtivo (safra) para o cálculo preciso da lucratividade.
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este projeto foi desenvolvido como um trabalho acadêmico para a disciplina de Eletiva II Programação Web (5º Termo) da Fatec Presidente Prudente.
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+✨ Funcionalidades Principais
+O sistema foi construído com uma arquitetura multi-usuário (multi-tenant) que separa as permissões em dois níveis:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. Funções do Produtor (Usuário Comum)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Gestão de Safras: CRUD (Criar, Ler, Atualizar, Deletar) dos ciclos produtivos (ex: Soja 2024/2025, Milho Safrinha).
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Gestão Financeira: Lançamento de todas as Receitas (vendas) e Custos (despesas), obrigatoriamente vinculados a uma safra específica.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Controle de Estoque: Gestão de Insumos (CRUD) com movimentação de "Entrada por Compra" e "Saída para Uso", que atualiza o saldo do inventário automaticamente .
 
-## Laravel Sponsors
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
+Cadastros de Apoio: CRUD de recursos próprios, incluindo Maquinários, Mão de Obra e Categorias Financeiras.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
 
-## Contributing
+Gestão de Custos Operacionais: CRUD de custos de maquinário (ex: combustível) e mão de obra (ex: diárias), também vinculados a uma safra.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
 
-## Code of Conduct
+Gerenciamento de Perfil: Permite ao produtor editar seus próprios dados pessoais, alterar sua senha e excluir sua própria conta.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+2. Funções do Administrador (Admin)
+O Admin possui todas as funções do Produtor e, adicionalmente:
 
-## Security Vulnerabilities
+Gestão de Produtores: CRUD de todas as contas de Produtores (usuários comuns) do sistema.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
+Gestão de Administradores: CRUD de outras contas de Administradores .
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+Visão Consolidada: Acesso a relatórios e painéis que exibem os dados de todos os produtores cadastrados no sistema .
+
+3. Relatórios e Dashboard
+Painel de Gestão: KPIs visuais de Receitas Totais, Despesas Totais e Saldo Atual.
+
+Relatórios Gerenciais: Uma tela dedicada que calcula e exibe automaticamente:
+
+RF_S1: Tabela de Lucratividade Consolidada por Safra (Lucro/Prejuízo).
+
+RF_S2: Gráfico de Distribuição de Custos por Categoria (Gráfico de Pizza).
+
+RF_S3: Gráfico de Fluxo de Caixa (Gráfico de Linha).
+
+KPI: Análise de Custo por Hectare.
+
+🛠️ Tecnologias Utilizadas
+Backend: Laravel (PHP)
+
+Frontend: Blade (HTML), Bootstrap 5, Chart.js (para os gráficos de relatórios)
+
+Banco de Dados: MySQL
+
+Autenticação: Laravel Breeze (para Login, Registro e Gerenciamento de Perfil)
+
+Controle de Versão: Git & GitHub
+
+📷 Telas do Sistema
