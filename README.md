@@ -28,10 +28,10 @@ O Admin possui todas as funções do Produtor e, adicionalmente:
 **3. Relatórios e Dashboard**
 * **Painel de Gestão**: KPIs visuais de Receitas Totais, Despesas Totais e Saldo Atual.
 * **Relatórios Gerenciais**: Uma tela dedicada que calcula e exibe automaticamente:
-* **Tabela de Lucratividade Consolidada por Safra (Lucro/Prejuízo)**.
-* **Gráfico de Distribuição de Custos por Categoria (Gráfico de Pizza)**.
-* **Gráfico de Fluxo de Caixa (Gráfico de Linha)**.
-* **KPI**: Análise de Custo por Hectare.
+        **Tabela de Lucratividade Consolidada por Safra (Lucro/Prejuízo)**.
+        **Gráfico de Distribuição de Custos por Categoria (Gráfico de Pizza)**.
+        **Gráfico de Fluxo de Caixa (Gráfico de Linha)**.
+        **KPI**: Análise de Custo por Hectare.
 
 # 🛠️ Tecnologias Utilizadas
 * **Backend**: Laravel (PHP)
