@@ -42,7 +42,8 @@ O Admin possui todas as funções do Produtor e, adicionalmente:
 
 # 📷 Telas do Sistema
 ![Screenshot da tela Principal](Image/painel.png)
-![Screenshot da tela de Safras](Image/safras.png)
+![Screenshot da tela de Safras](Image/safra.png)
+![Screenshot da tela de Safras Index](Image/safra_index.png)
 ![Screenshot da tela de Estoque Index](Image/estoque_index.png)
 ![Screenshot da tela de Estoque](Image/estoque.png)
 ![Screenshot da tela de Custo Operacional](Image/custo_op.png)
@@ -51,4 +52,6 @@ O Admin possui todas as funções do Produtor e, adicionalmente:
 ![Screenshot da tela de Produtor](Image/produtor.png)
 ![Screenshot da tela de Administrador](Image/administrador.png)
 ![Screenshot da tela de Relatorio](Image/relatorio.png)
+![Screenshot da tela de Relatorio Administrador](Image/adm_relatorio.png)
+![Screenshot da tela de Relatorio Administrador](Image/adm_relatorio2.png)
 ![Screenshot da tela de perfil](Image/perfil.png)
