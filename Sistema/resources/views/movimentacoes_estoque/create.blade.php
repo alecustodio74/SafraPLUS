@@ -84,7 +84,7 @@
                         </div>
 
                         <div class="mt-4">
-                            <button type="submit" class="btn btn-primary">Registrar</button>
+                            <button type="submit" class="btn btn-success">Registrar</button>
                             <a href="{{ route('movimentacoes-estoque.index') }}" class="btn btn-secondary">Voltar</a>
                         </div>
                     </form>

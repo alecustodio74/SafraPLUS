@@ -30,14 +30,15 @@ class LancamentoFinanceiroController extends Controller
     {
         $usuarioLogado = Auth::user();
         $safras = null;
+        $categorias = null;
 
         if ($usuarioLogado->can('is-admin')) {
             $safras = Safra::all();
+            $categorias = Categoria::all();
         } else {
             $safras = $usuarioLogado->safras;
+            $categorias = $usuarioLogado->categorias;
         }
-
-        $categorias = Categoria::all();
 
         return view('lancamentos_financeiros.create', compact('safras', 'categorias'));
     }
@@ -74,10 +75,12 @@ class LancamentoFinanceiroController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $lancamento = LancamentoFinanceiro::findOrFail($id);
             $safras = Safra::all();
+            $categorias = Categoria::all();
         } else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
             $safras = $usuarioLogado->safras;
+            $categorias = $usuarioLogado->categorias;
         }
 
         return view('lancamentos_financeiros.edit', compact('lancamento', 'safras', 'categorias'));

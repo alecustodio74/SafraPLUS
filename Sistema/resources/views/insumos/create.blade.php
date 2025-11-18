@@ -14,15 +14,15 @@
                         @csrf
 
                         @can('is-admin')
-                            <div class="mb-3">
-                                <label for="produtor_id" class="form-label">Produtor</label>
-                                <select name="produtor_id" id="produtor_id" class="form-select" required>
-                                    <option value="">Selecione um produtor</option>
-                                    @foreach($produtores as $produtor)
-                                        <option value="{{ $produtor->id }}">{{ $produtor->nome }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div class="mb-3">
+                            <label for="produtor_id" class="form-label">Produtor</label>
+                            <select name="produtor_id" id="produtor_id" class="form-select" required>
+                                <option value="">Selecione um produtor</option>
+                                @foreach($produtores as $produtor)
+                                <option value="{{ $produtor->id }}">{{ $produtor->nome }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         @endcan
 
                         <div class="mb-3">
