@@ -1,6 +1,10 @@
 -- Remove verificações de chaves estrangeiras para evitar erros de ordem
 SET FOREIGN_KEY_CHECKS=0;
 
+CREATE DATABASE IF NOT EXISTS safraplus;
+
+USE safraplus;
+
 -- 1. Tabela de Produtores (Usuários)
 DROP TABLE IF EXISTS `produtores`;
 CREATE TABLE `produtores` (
