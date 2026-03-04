@@ -1,77 +1,106 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container my-3 py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-10">
-
-            @if (session('error'))
-            <div class="alert alert-danger" role="alert">
-                {{ session('error') }}
-            </div>
-            @endif
-
-            @if (session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-
-            <div class="card shadow-sm">
-                <div class="card-header text-center bg-success text-white">
-                    <h1 class="mb-0 h3 fw-bold">Cadastro de Maquinários</h1>
-                </div>
-                <div class="card-body">
-                    <div class="d-flex justify-content-between mb-3">
-                        <a href="{{ route('maquinarios.create') }}" class="btn btn-primary">Novo Maquinário</a>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-striped table-bordered table-hover">
-                            <thead class="table-light">
-                                <tr>
-                                    <th>Nome</th>
-                                    <th>Marca/Modelo</th>
-                                    <th>Descrição</th>
-                                    <th>Ano</th>
-                                    <th>Custo/Hora</th>
-                                    @can('is-admin')
-                                        <th>Produtor</th>
-                                    @endcan
-                                    <th style="width: 150px;">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($maquinarios as $maquinario)
-                                <tr>
-                                    <td>{{ $maquinario->nome }}</td>
-                                    <td>{{ $maquinario->marca }} / {{ $maquinario->modelo }}</td>
-                                    <td>{{ $maquinario->descricao_atividade }}</td>
-                                    <td>{{ $maquinario->ano }}</td>
-                                    <td>R$ {{ number_format($maquinario->custo_hora, 2, ',', '.') }}</td>
-                                    @can('is-admin')
-                                        <td>{{ $maquinario->produtor->nome ?? 'N/A' }}</td>
-                                    @endcan
-                                    <td>
-                                        <a href="{{ route('maquinarios.edit', $maquinario->id) }}" class="btn btn-sm btn-warning">Editar</a>
-                                        <form action="{{ route('maquinarios.destroy', $maquinario->id) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Tem certeza que deseja excluir este maquinário?')">Excluir</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    {{-- Colspan atualizado de 6/5 para 7/6 --}}
-                                    <td colspan="@can('is-admin') 7 @else 6 @endcan" class="text-center">Nenhum maquinário cadastrado.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                        <a href="{{ route('painel') }}" class="btn btn-secondary">Voltar</a>
-                    </div>
-                </div>
-            </div>
+<div class="max-w-7xl mx-auto space-y-6">
+    <!-- Page Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div>
+            <h1 class="text-3xl font-display font-bold text-slate-800">Cadastro de Maquinários</h1>
+            <p class="text-slate-500 mt-1">Gerencie a frota de maquinários da sua propriedade.</p>
         </div>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('painel') }}" class="text-sm font-medium text-slate-600 bg-white px-4 py-2 rounded-lg border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors">
+                Voltar
+            </a>
+            <a href="{{ route('maquinarios.create') }}" class="inline-flex items-center gap-2 text-sm font-bold text-white bg-primary-600 px-4 py-2 rounded-lg shadow-md shadow-primary-500/30 hover:bg-primary-700 hover:shadow-lg transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Novo Maquinário
+            </a>
+        </div>
+    </div>
+
+    @if (session('error'))
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm mb-6">
+            <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm mb-6">
+            <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <!-- Table Card -->
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 border-b border-slate-100 text-sm font-semibold text-slate-600">
+                        <th class="py-4 px-6">Veículo</th>
+                        <th class="py-4 px-6">Descrição</th>
+                        <th class="py-4 px-6 text-center">Ano</th>
+                        <th class="py-4 px-6 text-right">Custo/Hora</th>
+                        @can('is-admin')
+                        <th class="py-4 px-6">Produtor</th>
+                        @endcan
+                        <th class="py-4 px-6 text-right">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                    @forelse ($maquinarios as $maquinario)
+                    <tr class="hover:bg-slate-50 transition-colors group">
+                        <td class="py-4 px-6">
+                            <div class="font-medium text-slate-800 text-sm">{{ $maquinario->nome }}</div>
+                            <div class="text-xs text-slate-500 mt-0.5">{{ $maquinario->marca }} / {{ $maquinario->modelo }}</div>
+                        </td>
+                        <td class="py-4 px-6 text-sm text-slate-600 max-w-xs truncate" title="{{ $maquinario->descricao_atividade }}">
+                            {{ $maquinario->descricao_atividade ?: '-' }}
+                        </td>
+                        <td class="py-4 px-6 text-sm text-slate-600 text-center">
+                            {{ $maquinario->ano }}
+                        </td>
+                        <td class="py-4 px-6 text-sm font-medium text-slate-700 text-right">
+                            R$ {{ number_format($maquinario->custo_hora, 2, ',', '.') }}
+                        </td>
+                        @can('is-admin')
+                        <td class="py-4 px-6 text-sm text-slate-600">
+                            {{ $maquinario->produtor->nome ?? 'N/A' }}
+                        </td>
+                        @endcan
+                        <td class="py-4 px-6 text-right space-x-2 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity">
+                            <a href="{{ route('maquinarios.edit', $maquinario->id) }}" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-amber-600 hover:bg-amber-100 transition-colors" title="Editar">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </a>
+                            <form action="{{ route('maquinarios.destroy', $maquinario->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Tem certeza que deseja excluir este maquinário?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-flex items-center justify-center w-8 h-8 rounded-lg text-red-600 hover:bg-red-100 transition-colors" title="Excluir">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="@can('is-admin') 6 @else 5 @endcan" class="py-8 px-6 text-center text-slate-500">
+                            <div class="flex flex-col items-center justify-center">
+                                <svg class="w-12 h-12 text-slate-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                                <p>Nenhum maquinário cadastrado ainda.</p>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+        @if($maquinarios->count() > 0)
+        <div class="bg-slate-50 border-t border-slate-100 px-6 py-3 text-sm text-slate-500">
+            Total de maquinários cadastrados: <span class="font-medium text-slate-700">{{ $maquinarios->count() }}</span>
+        </div>
+        @endif
     </div>
 </div>
 @endsection

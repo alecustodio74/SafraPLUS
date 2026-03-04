@@ -1,61 +1,71 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card card-custom">
-                <div class="card-header text-center bg-success text-white fw-bold fs-4">
-                    Cadastrar Novo Produtor
+<div class="max-w-3xl mx-auto space-y-6">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-display font-bold text-slate-800">Cadastrar Produtor</h1>
+        <p class="text-slate-500 mt-1">Adicione um novo produtor ou administrador ao sistema.</p>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative">
+        <div class="absolute top-0 left-0 w-2 h-full bg-primary-500"></div>
+        <div class="p-6 sm:p-8">
+            <form action="{{ route('produtores.store') }}" method="POST" class="space-y-6">
+                @csrf
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="nome" class="block text-sm font-medium text-slate-700 mb-1">Nome Completo</label>
+                        <input type="text" name="nome" id="nome" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required placeholder="Ex: Henrique Cruz de Lima">
+                    </div>
+
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email (Usado para Login)</label>
+                        <input type="email" name="email" id="email" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required autocomplete="username" placeholder="email@exemplo.com">
+                    </div>
                 </div>
 
-                <div class="card-body">
-                    <form action="{{ route('produtores.store') }}" method="POST">
-                        @csrf
-                        
-                        <div class="mb-3">
-                            <label for="nome" class="form-label">Nome Completo</label>
-                            <input type="text" name="nome" id="nome" class="form-control" required placeholder="Henrique Cruz de Lima">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email (Login)</label>
-                            <input type="email" name="email" id="email" class="form-control" required placeholder="email@email.com">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Senha</label>
-                            <input type="password" name="password" id="password" class="form-control" required placeholder="********">
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="cpf_cnpj" class="form-label">CPF / CNPJ (apenas números)</label>
-                                <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="form-control" required placeholder="***.***.***-**">
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="telefone" class="form-label">Telefone</label>
-                                <input type="text" name="telefone" id="telefone" class="form-control" placeholder="18 938485461">
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="propriedade" class="form-label">Nome da Propriedade</label>
-                            <input type="text" name="propriedade" id="propriedade" class="form-control" placeholder="Fazenda Colorado">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="cultura_principal" class="form-label">Cultura Principal</label>
-                            <input type="text" name="cultura_principal" id="cultura_principal" class="form-control" placeholder="Arroz / Soja / Milho ">
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a href="{{ route('produtores.index') }}" class="btn btn-secondary">Voltar</a>
-                            <button type="submit" class="btn btn-success">Salvar Produtor</button>
-                        </div>
-                    </form>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Senha Inicial</label>
+                        <input type="password" name="password" id="password" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required autocomplete="new-password" placeholder="••••••••">
+                    </div>
+                    <div>
+                        <label for="telefone" class="block text-sm font-medium text-slate-700 mb-1">Telefone / WhatsApp</label>
+                        <input type="text" name="telefone" id="telefone" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" placeholder="(18) 99999-9999">
+                    </div>
                 </div>
-            </div>
+                
+                <div>
+                    <label for="cpf_cnpj" class="block text-sm font-medium text-slate-700 mb-1">CPF / CNPJ (apenas números)</label>
+                    <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required placeholder="000.000.000-00">
+                </div>
+
+                <div class="p-5 bg-slate-50 border border-slate-100 rounded-xl space-y-4">
+                    <h3 class="font-semibold text-slate-800 text-sm uppercase tracking-wider">Dados da Propriedade (Opcional)</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="propriedade" class="block text-sm font-medium text-slate-700 mb-1">Nome da Propriedade</label>
+                            <input type="text" name="propriedade" id="propriedade" class="w-full border-slate-300 bg-white text-slate-900 focus:border-primary-500 focus:ring-primary-500 rounded-lg shadow-sm transition-colors px-3 py-2" placeholder="Ex: Fazenda Colorado">
+                        </div>
+
+                        <div>
+                            <label for="cultura_principal" class="block text-sm font-medium text-slate-700 mb-1">Cultura Principal</label>
+                            <input type="text" name="cultura_principal" id="cultura_principal" class="w-full border-slate-300 bg-white text-slate-900 focus:border-primary-500 focus:ring-primary-500 rounded-lg shadow-sm transition-colors px-3 py-2" placeholder="Ex: Soja, Milho, Arroz">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
+                    <button type="submit" class="inline-flex justify-center items-center px-6 py-2.5 bg-primary-600 border border-transparent rounded-xl font-bold text-sm text-white shadow-md shadow-primary-500/30 hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-600/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200">
+                        Salvar Produtor
+                    </button>
+                    <a href="{{ route('produtores.index') }}" class="text-sm font-medium text-slate-600 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -1,128 +1,122 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container my-3 py-5">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card shadow-sm">
-                <div class="card-header text-center bg-success text-white">
-                    <h1 class="mb-0 h3 fw-bold">Registrar Movimentação de Estoque</h1>
-                </div>
-                <div class="card-body bg-light">
-                    
-                    @if (session('error'))
-                    <div class="alert alert-danger" role="alert">
-                        {{ session('error') }}
+<div class="max-w-4xl mx-auto space-y-6">
+    <!-- Page Header -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-display font-bold text-slate-800">Registrar Movimentação de Estoque</h1>
+        <p class="text-slate-500 mt-1">Insira os dados da nova movimentação para atualizar a quantidade em estoque do insumo.</p>
+    </div>
+
+    @if (session('error'))
+        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl flex items-center gap-3 shadow-sm mb-6">
+            <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+            {{ session('error') }}
+        </div>
+    @endif
+
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+         x-data="{ 
+            tipo: '{{ old('tipo_movimentacao', '') }}' 
+         }">
+        <div class="p-6 sm:p-8">
+            <form action="{{ route('movimentacoes-estoque.store') }}" method="POST" class="space-y-6">
+                @csrf
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Tipo de Movimentação -->
+                    <div class="md:col-span-2">
+                        <label for="tipo_movimentacao" class="block text-sm font-medium text-slate-700 mb-1">Tipo de Movimentação</label>
+                        <select 
+                            name="tipo_movimentacao" 
+                            id="tipo_movimentacao" 
+                            x-model="tipo"
+                            class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5 appearance-none" 
+                            required>
+                            <option value="" disabled>Selecione o tipo</option>
+                            <option value="entrada">Entrada (Compra)</option>
+                            <option value="saida">Saída (Uso na Safra)</option>
+                        </select>
+                        @error('tipo_movimentacao')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
                     </div>
-                    @endif
 
-                    <form action="{{ route('movimentacoes-estoque.store') }}" method="POST">
-                        @csrf
+                    <!-- Insumo -->
+                    <div class="md:col-span-2">
+                        <label for="insumo_id" class="block text-sm font-medium text-slate-700 mb-1">Insumo</label>
+                        <select name="insumo_id" id="insumo_id" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5 appearance-none" required>
+                            <option value="" disabled {{ old('insumo_id') ? '' : 'selected' }}>Selecione um Insumo</option>
+                            @foreach($insumos as $insumo)
+                            <option value="{{ $insumo->id }}" {{ old('insumo_id') == $insumo->id ? 'selected' : '' }}>
+                                {{ $insumo->nome }} (Estoque: {{ $insumo->estoque_atual }} {{ $insumo->unidade_medida }})
+                            </option>
+                            @endforeach
+                        </select>
+                        @error('insumo_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="tipo_movimentacao" class="form-label">Tipo de Movimentação</label>
-                            <select name="tipo_movimentacao" id="tipo_movimentacao" class="form-select @error('tipo_movimentacao') is-invalid @enderror" required>
-                                <option value="" disabled {{ old('tipo_movimentacao') ? '' : 'selected' }}>Selecione o tipo</option>
-                                <option value="entrada" {{ old('tipo_movimentacao') == 'entrada' ? 'selected' : '' }}>Entrada (Compra)</option>
-                                <option value="saida" {{ old('tipo_movimentacao') == 'saida' ? 'selected' : '' }}>Saída (Uso na Safra)</option>
-                            </select>
-                            @error('tipo_movimentacao')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
+                    <!-- Quantidade -->
+                    <div>
+                        <label for="quantidade" class="block text-sm font-medium text-slate-700 mb-1">Quantidade</label>
+                        <input type="number" step="0.01" name="quantidade" id="quantidade" value="{{ old('quantidade') }}" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2" required placeholder="Ex: 75.5">
+                        @error('quantidade')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Data da Movimentação -->
+                    <div>
+                        <label for="data_movimentacao" class="block text-sm font-medium text-slate-700 mb-1">Data da Movimentação</label>
+                        <input type="date" name="data_movimentacao" id="data_movimentacao" value="{{ old('data_movimentacao', date('Y-m-d')) }}" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2" required>
+                        @error('data_movimentacao')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <!-- Valor Unitário (Conditional) -->
+                    <div x-show="tipo === 'entrada'" x-transition class="md:col-span-2" style="display: none;">
+                        <label for="valor_unitario" class="block text-sm font-medium text-slate-700 mb-1">Valor Unitário</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <span class="text-slate-500 sm:text-sm">R$</span>
+                            </div>
+                            <input type="number" step="0.01" name="valor_unitario" id="valor_unitario" value="{{ old('valor_unitario') }}" class="w-full pl-10 border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2" placeholder="0,00" x-bind:required="tipo === 'entrada'">
                         </div>
+                        <p class="text-xs text-slate-500 mt-1">Obrigatório para registrar entradas (compras).</p>
+                        @error('valor_unitario')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
 
-                        <div class="mb-3">
-                            <label for="insumo_id" class="form-label">Insumo</label>
-                            <select name="insumo_id" id="insumo_id" class="form-select @error('insumo_id') is-invalid @enderror" required>
-                                <option value="" disabled {{ old('insumo_id') ? '' : 'selected' }}>Selecione um Insumo</option>
-                                @foreach($insumos as $insumo)
-                                <option value="{{ $insumo->id }}" {{ old('insumo_id') == $insumo->id ? 'selected' : '' }}>
-                                    {{ $insumo->nome }} (Estoque: {{ $insumo->estoque_atual }})
-                                </option>
-                                @endforeach
-                            </select>
-                            @error('insumo_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="quantidade" class="form-label">Quantidade</label>
-                            <input type="number" step="0.01" name="quantidade" id="quantidade" class="form-control @error('quantidade') is-invalid @enderror" value="{{ old('quantidade') }}" required placeholder="75">
-                            @error('quantidade')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3" id="valor_unitario_wrapper" style="display: none;">
-                            <label for="valor_unitario" class="form-label">Valor Unitário</label>
-                            <input type="number" step="0.01" name="valor_unitario" id="valor_unitario" class="form-control @error('valor_unitario') is-invalid @enderror" value="{{ old('valor_unitario') }}" placeholder="120.00">
-                            @error('valor_unitario')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3" id="safra_id_wrapper" style="display: none;">
-                            <label for="safra_id" class="form-label">Safra de Destino</label>
-                            <select name="safra_id" id="safra_id" class="form-select @error('safra_id') is-invalid @enderror">
-                                <option value="" disabled selected>Selecione uma Safra</option>
-                                @foreach($safras as $safra)
-                                <option value="{{ $safra->id }}" {{ old('safra_id') == $safra->id ? 'selected' : '' }}>{{ $safra->cultura }}</option>
-                                @endforeach
-                            </select>
-                            @error('safra_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="data_movimentacao" class="form-label">Data da Movimentação</label>
-                            <input type="date" name="data_movimentacao" id="data_movimentacao" class="form-control @error('data_movimentacao') is-invalid @enderror" value="{{ old('data_movimentacao', date('Y-m-d')) }}" required>
-                            @error('data_movimentacao')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="mt-4">
-                            <button type="submit" class="btn btn-success">Registrar</button>
-                            <a href="{{ route('movimentacoes-estoque.index') }}" class="btn btn-secondary">Voltar</a>
-                        </div>
-                    </form>
+                    <!-- Safra Destino (Conditional) -->
+                    <div x-show="tipo === 'saida'" x-transition class="md:col-span-2" style="display: none;">
+                        <label for="safra_id" class="block text-sm font-medium text-slate-700 mb-1">Safra de Destino</label>
+                        <select name="safra_id" id="safra_id" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5 appearance-none" x-bind:required="tipo === 'saida'">
+                            <option value="" disabled selected>Selecione a Safra que receberá a aplicação do insumo</option>
+                            @foreach($safras as $safra)
+                            <option value="{{ $safra->id }}" {{ old('safra_id') == $safra->id ? 'selected' : '' }}>{{ $safra->cultura }}</option>
+                            @endforeach
+                        </select>
+                        <p class="text-xs text-slate-500 mt-1">Obrigatório para registrar saídas (uso no campo).</p>
+                        @error('safra_id')
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
-            </div>
+
+                <div class="pt-6 border-t border-slate-100 flex items-center justify-end gap-3">
+                    <a href="{{ route('movimentacoes-estoque.index') }}" class="px-5 py-2.5 text-sm font-medium text-slate-600 bg-white border border-slate-300 rounded-xl shadow-sm hover:bg-slate-50 focus:ring-4 focus:ring-slate-100 transition-all">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="px-5 py-2.5 text-sm font-medium text-white bg-primary-600 border border-transparent rounded-xl shadow-sm hover:bg-primary-700 focus:ring-4 focus:ring-primary-500/30 transition-all">
+                        Registrar Movimentação
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tipoMovimentacao = document.getElementById('tipo_movimentacao');
-        const valorUnitarioWrapper = document.getElementById('valor_unitario_wrapper');
-        const safraIdWrapper = document.getElementById('safra_id_wrapper');
-        const valorUnitarioInput = document.getElementById('valor_unitario');
-        const safraIdInput = document.getElementById('safra_id');
-
-        function toggleFields() {
-            const tipo = tipoMovimentacao.value;
-            if (tipo === 'entrada') {
-                valorUnitarioWrapper.style.display = 'block';
-                valorUnitarioInput.required = true;
-                safraIdWrapper.style.display = 'none';
-                safraIdInput.required = false;
-            } else if (tipo === 'saida') {
-                valorUnitarioWrapper.style.display = 'none';
-                valorUnitarioInput.required = false;
-                safraIdWrapper.style.display = 'block';
-                safraIdInput.required = true;
-            } else {
-                valorUnitarioWrapper.style.display = 'none';
-                valorUnitarioInput.required = false;
-                safraIdWrapper.style.display = 'none';
-                safraIdInput.required = false;
-            }
-        }
-        tipoMovimentacao.addEventListener('change', toggleFields);
-        toggleFields();
-    });
-</script>
 @endsection

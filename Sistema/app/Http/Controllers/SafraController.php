@@ -16,7 +16,8 @@ class SafraController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $safras = Safra::with('produtor')->get();
-        } else {
+        }
+        else {
             $safras = $usuarioLogado->safras;
         }
 
@@ -29,7 +30,13 @@ class SafraController extends Controller
         if (Auth::user()->can('is-admin')) {
             $produtores = Produtor::all();
         }
-        return view('safras.create', compact('produtores'));
+
+        $culturasPredefinidas = ['Soja', 'Milho', 'Trigo', 'Arroz', 'Feijão', 'Cana-de-açúcar', 'Algodão', 'Amendoim', 'Sorgo', 'Café'];
+        $culturasNoBanco = Safra::select('cultura')->distinct()->pluck('cultura')->toArray();
+        $culturas = array_unique(array_merge($culturasPredefinidas, $culturasNoBanco));
+        sort($culturas);
+
+        return view('safras.create', compact('produtores', 'culturas'));
     }
 
     public function store(Request $request)
@@ -40,7 +47,7 @@ class SafraController extends Controller
         if ($usuarioLogado->can('is-produtor')) {
             $dados['produtor_id'] = $usuarioLogado->id;
         }
-        
+
         Safra::create($dados);
 
         return redirect()->route('safras.index')->with('success', 'Safra criada com sucesso!');
@@ -53,7 +60,8 @@ class SafraController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $safra = Safra::findOrFail($id);
-        } else {
+        }
+        else {
             $safra = $usuarioLogado->safras()->findOrFail($id);
         }
 
@@ -69,11 +77,17 @@ class SafraController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $safra = Safra::findOrFail($id);
             $produtores = Produtor::all();
-        } else {
+        }
+        else {
             $safra = $usuarioLogado->safras()->findOrFail($id);
         }
 
-        return view('safras.edit', compact('safra', 'produtores'));
+        $culturasPredefinidas = ['Soja', 'Milho', 'Trigo', 'Arroz', 'Feijão', 'Cana-de-açúcar', 'Algodão', 'Amendoim', 'Sorgo', 'Café'];
+        $culturasNoBanco = Safra::select('cultura')->distinct()->pluck('cultura')->toArray();
+        $culturas = array_unique(array_merge($culturasPredefinidas, $culturasNoBanco));
+        sort($culturas);
+
+        return view('safras.edit', compact('safra', 'produtores', 'culturas'));
     }
 
     public function update(Request $request, $id)
@@ -84,7 +98,8 @@ class SafraController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $safra = Safra::findOrFail($id);
-        } else {
+        }
+        else {
             $safra = $usuarioLogado->safras()->findOrFail($id);
             if (isset($dados['produtor_id'])) {
                 unset($dados['produtor_id']);
@@ -103,10 +118,11 @@ class SafraController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $safra = Safra::findOrFail($id);
-        } else {
+        }
+        else {
             $safra = $usuarioLogado->safras()->findOrFail($id);
         }
-        
+
         $safra->delete();
 
         return redirect()->route('safras.index')->with('success', 'Safra excluída com sucesso!');
