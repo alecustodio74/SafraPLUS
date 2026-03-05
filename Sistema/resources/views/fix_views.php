@@ -27,7 +27,6 @@ foreach ($dirs as $dir) {
             if (file_exists($filePath)) {
                 $content = file_get_contents($filePath);
                 $initialLength = strlen($content);
-                // Remove the h2 tag that causes duplication (usually inside a mb-6 div near the top)
                 $content = preg_replace('/^\s*<h2 class="text-2xl font-bold text-gray-900 tracking-tight">.*?<\/h2>\r?\n?/m', '', $content);
                 if (strlen($content) < $initialLength) {
                     file_put_contents($filePath, $content);
