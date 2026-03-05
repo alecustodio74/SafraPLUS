@@ -7,7 +7,7 @@
 <!-- Header Section -->
 <div class="mb-8">
     <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Visão Geral</h2>
-    <p class="text-base text-gray-500 mt-2">Bem-vindo ao seu painel. Acompanhe as principais métricas e finanças da sua propriedade.</p>
+    <p class="text-base text-gray-500 mt-2">Bem-vindo(a) ao seu painel. Acompanhe as principais métricas e finanças da sua propriedade.</p>
 </div>
 
 <!-- Financial Summary Cards -->
