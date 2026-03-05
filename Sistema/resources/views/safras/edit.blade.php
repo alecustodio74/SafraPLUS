@@ -5,7 +5,6 @@
 @section('content')
 <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
-        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Editar Safra</h2>
         <p class="text-sm text-gray-500 mt-1">Atualize as informações sobre o plantio.</p>
     </div>
 </div>

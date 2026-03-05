@@ -156,6 +156,9 @@
             </div>
             @endforelse
         </div>
+        <div class="px-6 py-4 bg-white border-t border-gray-100 mt-4 rounded-b-xl">
+            {{ $maquinarios->links() }}
+        </div>
     </div>
 </div>
 

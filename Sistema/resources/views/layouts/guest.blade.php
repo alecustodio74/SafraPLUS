@@ -38,7 +38,7 @@
 
         <!-- Lado Direito: Formulários (Login/Registro) -->
         <div class="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 lg:p-20 relative overflow-y-auto">
-            <div class="flex-1"></div>
+            <div class="flex-[0.4] sm:flex-1"></div>
             <div class="w-full max-w-sm mx-auto flex-none py-8">
                 <!-- Logo Topo -->
                 <div class="mb-10 text-center sm:text-left">

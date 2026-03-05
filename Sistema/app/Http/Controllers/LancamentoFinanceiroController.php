@@ -16,12 +16,18 @@ class LancamentoFinanceiroController extends Controller
         $lancamentos = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $lancamentos = LancamentoFinanceiro::with('safra', 'categoria')->get();
-        } else {
+            $lancamentos = LancamentoFinanceiro::with('safra', 'categoria')
+                ->orderBy('data_lancamento', 'desc')
+                ->orderBy('valor_total', 'desc')
+                ->paginate(10);
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $lancamentos = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
                 ->with('safra', 'categoria')
-                ->get();
+                ->orderBy('data_lancamento', 'desc')
+                ->orderBy('valor_total', 'desc')
+                ->paginate(10);
         }
         return view('lancamentos_financeiros.index', compact('lancamentos'));
     }
@@ -35,7 +41,8 @@ class LancamentoFinanceiroController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $safras = Safra::all();
             $categorias = Categoria::all();
-        } else {
+        }
+        else {
             $safras = $usuarioLogado->safras;
             $categorias = $usuarioLogado->categorias;
         }
@@ -76,7 +83,8 @@ class LancamentoFinanceiroController extends Controller
             $lancamento = LancamentoFinanceiro::findOrFail($id);
             $safras = Safra::all();
             $categorias = Categoria::all();
-        } else {
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
             $safras = $usuarioLogado->safras;
@@ -93,7 +101,8 @@ class LancamentoFinanceiroController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $lancamento = LancamentoFinanceiro::findOrFail($id);
-        } else {
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
         }
@@ -120,7 +129,8 @@ class LancamentoFinanceiroController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $lancamento = LancamentoFinanceiro::findOrFail($id);
-        } else {
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
         }

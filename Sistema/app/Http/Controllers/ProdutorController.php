@@ -11,7 +11,7 @@ class ProdutorController extends Controller
 {
     public function index()
     {
-        $produtores = Produtor::where('role', 'produtor')->get();
+        $produtores = Produtor::where('role', 'produtor')->orderBy('nome', 'asc')->paginate(10);
         return view('produtores.index', compact('produtores'));
     }
 

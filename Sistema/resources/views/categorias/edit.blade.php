@@ -5,7 +5,6 @@
 @section('content')
 
 <div class="mb-6">
-    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Editar Categoria</h2>
     <p class="text-sm text-gray-500 mt-1">Atualize as informações desta categoria.</p>
 </div>
 

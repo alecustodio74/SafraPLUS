@@ -30,7 +30,7 @@ class Safra extends Model
      */
     public function produtor()
     {
-        return $this->belongsTo(Produtor::class, 'produtor_id');
+        return $this->belongsTo(Produtor::class , 'produtor_id');
     }
 
     /**
@@ -38,6 +38,14 @@ class Safra extends Model
      */
     public function lancamentosFinanceiros()
     {
-        return $this->hasMany(LancamentoFinanceiro::class, 'safra_id');
+        return $this->hasMany(LancamentoFinanceiro::class , 'safra_id');
+    }
+
+    /**
+     * Get the custos operacionais for the safra.
+     */
+    public function custosOperacionais()
+    {
+        return $this->hasMany(CustoOperacional::class , 'safra_id');
     }
 }

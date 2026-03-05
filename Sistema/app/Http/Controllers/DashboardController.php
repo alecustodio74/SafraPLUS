@@ -23,7 +23,7 @@ class DashboardController extends Controller
             $receitasTotais = LancamentoFinanceiro::where('tipo_receita_custo', 'receita')->sum('valor_total');
             $despesasTotais = LancamentoFinanceiro::where('tipo_receita_custo', 'custo')->sum('valor_total');
 
-            $safrasRecentes = Safra::orderBy('data_inicio', 'desc')->take(5)->get();
+            $safrasRecentes = Safra::orderBy('data_inicio', 'desc')->take(3)->get();
 
             // Resumo últimos 6 meses (Admin)
             $seisMesesAtras = Carbon::now()->subMonths(5)->startOfMonth();
@@ -51,7 +51,7 @@ class DashboardController extends Controller
 
             $safrasRecentes = $usuarioLogado->safras()
                 ->orderBy('data_inicio', 'desc')
-                ->take(5)->get();
+                ->take(3)->get();
 
             // Resumo últimos 6 meses (Produtor)
             $seisMesesAtras = Carbon::now()->subMonths(5)->startOfMonth();

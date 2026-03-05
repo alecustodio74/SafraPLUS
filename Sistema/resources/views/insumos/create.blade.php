@@ -4,7 +4,6 @@
 
 @section('content')
 <div class="mb-6">
-    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Novo Insumo</h2>
     <p class="text-sm text-gray-500 mt-1">Cadastre um novo produto no estoque.</p>
 </div>
 

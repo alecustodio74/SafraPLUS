@@ -15,7 +15,7 @@ class AdministradorController extends Controller
 
     public function index()
     {
-        $administradores = Produtor::where('role', 'admin')->get();
+        $administradores = Produtor::where('role', 'admin')->orderBy('nome', 'asc')->paginate(10);
         return view('administradores.index', compact('administradores'));
     }
 
@@ -28,9 +28,9 @@ class AdministradorController extends Controller
     {
         $request->validate([
             'nome' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:'.Produtor::class],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:' . Produtor::class],
             'password' => ['required', Rules\Password::defaults()],
-            'cpf_cnpj' => ['required', 'string', 'max:20', 'unique:'.Produtor::class],
+            'cpf_cnpj' => ['required', 'string', 'max:20', 'unique:' . Produtor::class],
         ]);
 
         Produtor::create([
@@ -66,11 +66,12 @@ class AdministradorController extends Controller
     public function destroy(Produtor $administrador)
     {
         if (Produtor::where('role', 'admin')->count() === 1) {
-             return Redirect::route('administradores.index')->with('error', 'Não é possível excluir o último administrador.');
+            return Redirect::route('administradores.index')->with('error', 'Não é possível excluir o último administrador.');
         }
 
         $administrador->delete();
         return Redirect::route('administradores.index')->with('success', 'Administrador excluído com sucesso!');
     }
-    
+
+
 }

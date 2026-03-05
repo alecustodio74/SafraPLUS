@@ -15,9 +15,10 @@ class InsumoController extends Controller
         $insumos = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $insumos = Insumo::with('produtor')->get();
-        } else {
-            $insumos = $usuarioLogado->insumos;
+            $insumos = Insumo::with('produtor')->orderBy('estoque_atual', 'asc')->paginate(10);
+        }
+        else {
+            $insumos = $usuarioLogado->insumos()->orderBy('estoque_atual', 'asc')->paginate(10);
         }
 
         return view('insumos.index', compact('insumos'));
@@ -40,7 +41,7 @@ class InsumoController extends Controller
         if ($usuarioLogado->can('is-produtor')) {
             $dados['produtor_id'] = $usuarioLogado->id;
         }
-        
+
         Insumo::create($dados);
 
         return redirect()->route('insumos.index')->with('success', 'Insumo criado com sucesso!');
@@ -55,7 +56,8 @@ class InsumoController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $insumo = Insumo::findOrFail($id);
             $produtores = Produtor::all();
-        } else {
+        }
+        else {
             $insumo = $usuarioLogado->insumos()->findOrFail($id);
         }
 
@@ -70,7 +72,8 @@ class InsumoController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $insumo = Insumo::findOrFail($id);
-        } else {
+        }
+        else {
             $insumo = $usuarioLogado->insumos()->findOrFail($id);
             if (isset($dados['produtor_id'])) {
                 unset($dados['produtor_id']);
@@ -89,10 +92,11 @@ class InsumoController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $insumo = Insumo::findOrFail($id);
-        } else {
+        }
+        else {
             $insumo = $usuarioLogado->insumos()->findOrFail($id);
         }
-        
+
         $insumo->delete();
 
         return redirect()->route('insumos.index')->with('success', 'Insumo excluído com sucesso!');

@@ -15,9 +15,10 @@ class MaquinarioController extends Controller
         $maquinarios = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $maquinarios = Maquinario::with('produtor')->get();
-        } else {
-            $maquinarios = $usuarioLogado->maquinarios;
+            $maquinarios = Maquinario::with('produtor')->orderBy('custo_hora', 'desc')->paginate(10);
+        }
+        else {
+            $maquinarios = $usuarioLogado->maquinarios()->orderBy('custo_hora', 'desc')->paginate(10);
         }
 
         return view('maquinarios.index', compact('maquinarios'));
@@ -40,7 +41,7 @@ class MaquinarioController extends Controller
         if ($usuarioLogado->can('is-produtor')) {
             $dados['produtor_id'] = $usuarioLogado->id;
         }
-        
+
         Maquinario::create($dados);
 
         return redirect()->route('maquinarios.index')->with('success', 'Maquinário criado com sucesso!');
@@ -55,7 +56,8 @@ class MaquinarioController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $maquinario = Maquinario::findOrFail($id);
             $produtores = Produtor::all();
-        } else {
+        }
+        else {
             $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
         }
 
@@ -70,7 +72,8 @@ class MaquinarioController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $maquinario = Maquinario::findOrFail($id);
-        } else {
+        }
+        else {
             $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
             if (isset($dados['produtor_id'])) {
                 unset($dados['produtor_id']);
@@ -89,10 +92,11 @@ class MaquinarioController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $maquinario = Maquinario::findOrFail($id);
-        } else {
+        }
+        else {
             $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
         }
-        
+
         $maquinario->delete();
 
         return redirect()->route('maquinarios.index')->with('success', 'Maquinário excluído com sucesso!');

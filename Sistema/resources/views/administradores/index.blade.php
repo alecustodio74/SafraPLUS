@@ -142,10 +142,12 @@
             @endforelse
         </div>
         
-        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-xl text-sm text-gray-500 flex items-center justify-between">
-            <span>Total de administradores: <span class="font-bold text-gray-900">{{ $administradores->count() }}</span></span>
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 text-sm text-gray-500 flex items-center justify-between">
+            <span>Total de administradores: <span class="font-bold text-gray-900">{{ $administradores->total() }}</span></span>
         </div>
-    </div>
+        <div class="px-6 py-4 bg-white border-t border-gray-100 rounded-b-xl">
+            {{ $administradores->links() }}
+        </div>
 </div>
 
 @endsection

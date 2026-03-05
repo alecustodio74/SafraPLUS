@@ -17,12 +17,14 @@ class MovimentacaoEstoqueController extends Controller
         $movimentacoes = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $movimentacoes = MovimentacaoEstoque::with('insumo', 'safra')->get();
-        } else {
+            $movimentacoes = MovimentacaoEstoque::with('insumo', 'safra')->orderBy('quantidade', 'asc')->paginate(10);
+        }
+        else {
             $insumoIds = $usuarioLogado->insumos->pluck('id');
             $movimentacoes = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)
                 ->with('insumo', 'safra')
-                ->get();
+                ->orderBy('quantidade', 'asc')
+                ->paginate(10);
         }
 
         return view('movimentacoes_estoque.index', compact('movimentacoes'));
@@ -37,7 +39,8 @@ class MovimentacaoEstoqueController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $insumos = Insumo::all();
             $safras = Safra::all();
-        } else {
+        }
+        else {
             $insumos = $usuarioLogado->insumos;
             $safras = $usuarioLogado->safras;
         }
@@ -71,7 +74,8 @@ class MovimentacaoEstoqueController extends Controller
 
         if ($dados['tipo_movimentacao'] == 'entrada') {
             $insumo->estoque_atual += $dados['quantidade'];
-        } else {
+        }
+        else {
             if ($insumo->estoque_atual < $dados['quantidade']) {
                 return back()->with('error', 'Estoque insuficiente para esta saída.')->withInput();
             }
@@ -95,7 +99,8 @@ class MovimentacaoEstoqueController extends Controller
             $movimentacao = MovimentacaoEstoque::findOrFail($id);
             $insumos = Insumo::all();
             $safras = Safra::all();
-        } else {
+        }
+        else {
             $insumoIds = $usuarioLogado->insumos->pluck('id');
             $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
             $insumos = $usuarioLogado->insumos;
@@ -112,7 +117,8 @@ class MovimentacaoEstoqueController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $movimentacao = MovimentacaoEstoque::findOrFail($id);
-        } else {
+        }
+        else {
             $insumoIds = $usuarioLogado->insumos->pluck('id');
             $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
         }
@@ -138,7 +144,8 @@ class MovimentacaoEstoqueController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $movimentacao = MovimentacaoEstoque::findOrFail($id);
-        } else {
+        }
+        else {
             $insumoIds = $usuarioLogado->insumos->pluck('id');
             $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
         }
@@ -146,7 +153,8 @@ class MovimentacaoEstoqueController extends Controller
         $insumo = $movimentacao->insumo;
         if ($movimentacao->tipo_movimentacao == 'entrada') {
             $insumo->estoque_atual -= $movimentacao->quantidade;
-        } else {
+        }
+        else {
             $insumo->estoque_atual += $movimentacao->quantidade;
         }
         $insumo->save();

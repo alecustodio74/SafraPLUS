@@ -15,9 +15,10 @@ class CategoriaController extends Controller
         $categorias = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $categorias = Categoria::with('produtor')->get();
-        } else {
-            $categorias = $usuarioLogado->categorias;
+            $categorias = Categoria::with('produtor')->orderBy('nome', 'asc')->paginate(10);
+        }
+        else {
+            $categorias = $usuarioLogado->categorias()->orderBy('nome', 'asc')->paginate(10);
         }
 
         return view('categorias.index', compact('categorias'));
@@ -40,7 +41,7 @@ class CategoriaController extends Controller
         if ($usuarioLogado->can('is-produtor')) {
             $dados['produtor_id'] = $usuarioLogado->id;
         }
-        
+
         Categoria::create($dados);
 
         return redirect()->route('categorias.index')->with('success', 'Categoria criada com sucesso!');
@@ -55,7 +56,8 @@ class CategoriaController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $categoria = Categoria::findOrFail($id);
             $produtores = Produtor::all();
-        } else {
+        }
+        else {
             $categoria = $usuarioLogado->categorias()->findOrFail($id);
         }
 
@@ -70,7 +72,8 @@ class CategoriaController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $categoria = Categoria::findOrFail($id);
-        } else {
+        }
+        else {
             $categoria = $usuarioLogado->categorias()->findOrFail($id);
             if (isset($dados['produtor_id'])) {
                 unset($dados['produtor_id']);
@@ -89,10 +92,11 @@ class CategoriaController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $categoria = Categoria::findOrFail($id);
-        } else {
+        }
+        else {
             $categoria = $usuarioLogado->categorias()->findOrFail($id);
         }
-        
+
         $categoria->delete();
 
         return redirect()->route('categorias.index')->with('success', 'Categoria excluída com sucesso!');

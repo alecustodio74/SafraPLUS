@@ -17,12 +17,14 @@ class CustoOperacionalController extends Controller
         $custos = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $custos = CustoOperacional::with('safra', 'maquinario', 'maoDeObra')->get();
-        } else {
+            $custos = CustoOperacional::with('safra', 'maquinario', 'maoDeObra')->orderBy('valor', 'desc')->paginate(10);
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $custos = CustoOperacional::whereIn('safra_id', $safraIds)
                 ->with('safra', 'maquinario', 'maoDeObra')
-                ->get();
+                ->orderBy('valor', 'desc')
+                ->paginate(10);
         }
 
         return view('custos_operacionais.index', compact('custos'));
@@ -39,7 +41,8 @@ class CustoOperacionalController extends Controller
             $safras = Safra::all();
             $maquinarios = Maquinario::all();
             $maoDeObras = MaoDeObra::all();
-        } else {
+        }
+        else {
             $safras = $usuarioLogado->safras;
             $maquinarios = $usuarioLogado->maquinarios;
             $maoDeObras = $usuarioLogado->maoDeObras;
@@ -83,7 +86,8 @@ class CustoOperacionalController extends Controller
             $safras = Safra::all();
             $maquinarios = Maquinario::all();
             $maoDeObras = MaoDeObra::all();
-        } else {
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
 
@@ -102,7 +106,8 @@ class CustoOperacionalController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $custo = CustoOperacional::findOrFail($id);
-        } else {
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
         }
@@ -128,7 +133,8 @@ class CustoOperacionalController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $custo = CustoOperacional::findOrFail($id);
-        } else {
+        }
+        else {
             $safraIds = $usuarioLogado->safras->pluck('id');
             $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
         }

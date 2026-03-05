@@ -15,9 +15,10 @@ class MaoDeObraController extends Controller
         $maoDeObras = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $maoDeObras = MaoDeObra::with('produtor')->get();
-        } else {
-            $maoDeObras = $usuarioLogado->maoDeObras;
+            $maoDeObras = MaoDeObra::with('produtor')->orderBy('custo_diario_hora', 'desc')->paginate(10);
+        }
+        else {
+            $maoDeObras = $usuarioLogado->maoDeObras()->orderBy('custo_diario_hora', 'desc')->paginate(10);
         }
 
         return view('mao_de_obra.index', compact('maoDeObras'));
@@ -40,7 +41,7 @@ class MaoDeObraController extends Controller
         if ($usuarioLogado->can('is-produtor')) {
             $dados['produtor_id'] = $usuarioLogado->id;
         }
-        
+
         MaoDeObra::create($dados);
 
         return redirect()->route('mao-de-obra.index')->with('success', 'Mão de Obra criada com sucesso!');
@@ -55,7 +56,8 @@ class MaoDeObraController extends Controller
         if ($usuarioLogado->can('is-admin')) {
             $maoDeObra = MaoDeObra::findOrFail($id);
             $produtores = Produtor::all();
-        } else {
+        }
+        else {
             $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
         }
 
@@ -70,7 +72,8 @@ class MaoDeObraController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $maoDeObra = MaoDeObra::findOrFail($id);
-        } else {
+        }
+        else {
             $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
             if (isset($dados['produtor_id'])) {
                 unset($dados['produtor_id']);
@@ -89,10 +92,11 @@ class MaoDeObraController extends Controller
 
         if ($usuarioLogado->can('is-admin')) {
             $maoDeObra = MaoDeObra::findOrFail($id);
-        } else {
+        }
+        else {
             $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
         }
-        
+
         $maoDeObra->delete();
 
         return redirect()->route('mao-de-obra.index')->with('success', 'Mão de Obra excluída com sucesso!');

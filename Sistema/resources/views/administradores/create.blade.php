@@ -5,7 +5,6 @@
 @section('content')
 
 <div class="mb-6">
-    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Novo Administrador</h2>
     <p class="text-sm text-gray-500 mt-1">Cadastre um novo usuário com acesso total ao sistema.</p>
 </div>
 

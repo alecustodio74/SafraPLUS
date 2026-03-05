@@ -20,7 +20,6 @@
 
 <div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
     <div>
-        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Produtores</h2>
         <p class="text-sm text-gray-500 mt-1">Gerencie os usuários e proprietários rurais do sistema.</p>
     </div>
     <div class="flex gap-3">
@@ -151,11 +150,15 @@
             @endforelse
         </div>
         
-        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 text-sm text-gray-500 flex items-center justify-between">
-            <span>Total de usuários registrados: <span class="font-bold text-gray-900">{{ $produtores->count() }}</span></span>
-            <span class="hidden sm:inline text-xs">Apenas Administradores podem visualizar esta lista.</span>
+        <div class="px-6 py-4 border-t border-gray-100 bg-gray-50 text-sm text-gray-500 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+                <span>Total de usuários registrados: <span class="font-bold text-gray-900">{{ $produtores->total() }}</span></span>
+                <span class="hidden sm:inline text-xs ml-2">Apenas Administradores podem visualizar esta lista.</span>
+            </div>
         </div>
-    </div>
+        <div class="px-6 py-4 bg-white border-t border-gray-100">
+            {{ $produtores->links() }}
+        </div>
 </div>
 
 @endsection

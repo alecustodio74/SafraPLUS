@@ -15,10 +15,10 @@ class SafraController extends Controller
         $safras = null;
 
         if ($usuarioLogado->can('is-admin')) {
-            $safras = Safra::with('produtor')->get();
+            $safras = Safra::with('produtor')->orderBy('data_inicio', 'desc')->paginate(10);
         }
         else {
-            $safras = $usuarioLogado->safras;
+            $safras = $usuarioLogado->safras()->orderBy('data_inicio', 'desc')->paginate(10);
         }
 
         return view('safras.index', compact('safras'));
