@@ -4,117 +4,143 @@
 
 @section('content')
 
-<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Painel de Relatórios Gerenciais</h2>
-        <p class="text-sm text-gray-500 mt-1">
-            {{ Auth::user()->role == 'admin' ? 'Dados consolidados de todos os produtores.' : 'Visão detalhada do seu desempenho financeiro.' }}
-        </p>
+<div class="mb-8">
+    <p class="text-sm text-gray-500 font-medium">Visualize o desempenho financeiro e operacional consolidado de suas safras.</p>
+</div>
+
+<!-- KPIs e Gráficos de Topo -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+    <!-- KPI Custo por Hectare -->
+    <div class="lg:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-4 md:p-6 relative overflow-hidden group h-full">
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-600"></div>
+        <div class="relative z-10 flex flex-col h-full">
+            <div class="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center mb-4 backdrop-blur-md shadow-sm border border-indigo-100 group-hover:scale-110 transition-transform">
+                <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <h3 class="text-gray-400 font-black text-[9px] uppercase tracking-[0.2em] mb-1">Investimento Médio</h3>
+            <div class="flex items-baseline flex-wrap gap-1">
+                <span class="text-2xl md:text-3xl font-black text-gray-900 tracking-tight">R$ {{ number_format($custoPorHectare, 2, ',', '.') }}</span>
+                <span class="text-gray-400 font-bold text-xs">/ ha</span>
+            </div>
+            <p class="text-gray-400 mt-4 text-[10px] font-semibold leading-tight">
+                Custo total por área plantada.
+            </p>
+        </div>
+    </div>
+
+    <!-- Distribuição de Custos -->
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col relative">
+        <div class="absolute inset-x-0 top-0 h-1 bg-amber-500"></div>
+        <div class="p-5 border-b border-gray-50 flex items-center justify-between">
+            <h3 class="text-sm font-black text-gray-400 uppercase tracking-widest">Estrutura de Gastos</h3>
+        </div>
+        <div class="p-6 flex-1 flex justify-center items-center h-[220px]">
+            @if($custosLabels->isEmpty())
+                <p class="text-gray-400 font-medium text-sm italic text-center">Nenhum custo registrado para análise.</p>
+            @else
+                <canvas id="costDistributionChart" class="max-h-[220px]"></canvas>
+            @endif
+        </div>
     </div>
 </div>
 
-<div class="mb-6">
+<!-- Lucratividade e Fluxo de Caixa -->
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+    <!-- Tabela/Card de Lucratividade -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
-        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-fuchsia-500"></div>
-        <div class="p-6 border-b border-gray-50 flex items-center justify-between gap-4">
-            <h3 class="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <svg class="w-5 h-5 text-fuchsia-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                Lucratividade Consolidada por Safra
+        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
+        <div class="p-5 border-b border-gray-50 bg-gray-50/30">
+            <h3 class="text-sm font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                Lucratividade por Safra
             </h3>
         </div>
-        <div class="overflow-x-auto pl-1.5">
+        
+        <!-- Desktop View -->
+        <div class="hidden md:block overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
-                    <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
+                    <tr class="bg-gray-50/50 border-b border-gray-100 text-[10px] uppercase tracking-tighter text-gray-500 font-black">
                         <th class="px-6 py-4">Safra</th>
-                        <th class="px-6 py-4 text-right">Receitas Totais</th>
-                        <th class="px-6 py-4 text-right">Despesas Totais</th>
-                        <th class="px-6 py-4 text-right">Lucro / Prejuízo</th>
+                        <th class="px-6 py-4 text-right">Resultado</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-sm">
                     @forelse ($relatorioLucroPorSafra as $safra)
-                    <tr class="hover:bg-gray-50/50 transition-colors group">
-                        <td class="px-6 py-4 text-gray-900 font-medium">
-                            {{ $safra->cultura }}
-                            <span class="block text-xs text-gray-500 mt-0.5 font-normal">
-                                {{ \Carbon\Carbon::parse($safra->data_inicio)->format('d/m/Y') }} - {{ $safra->data_fim ? \Carbon\Carbon::parse($safra->data_fim)->format('d/m/Y') : 'Em andamento' }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right font-semibold text-emerald-600">
-                            R$ {{ number_format($safra->receitas ?? 0, 2, ',', '.') }}
-                        </td>
-                        <td class="px-6 py-4 text-right font-semibold text-rose-600">
-                            R$ {{ number_format($safra->despesas ?? 0, 2, ',', '.') }}
+                    <tr class="hover:bg-gray-50/30 transition-colors group">
+                        <td class="px-6 py-4">
+                            <span class="text-gray-900 font-bold block">{{ $safra->cultura }}</span>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase">{{ \Carbon\Carbon::parse($safra->data_inicio)->format('d/m/y') }} @if($safra->data_fim) - {{ \Carbon\Carbon::parse($safra->data_fim)->format('d/m/y') }} @endif</span>
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-sm font-bold {{ ($safra->lucro ?? 0) >= 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700' }}">
-                                R$ {{ number_format($safra->lucro ?? 0, 2, ',', '.') }}
-                            </span>
+                            <div class="flex flex-col items-end">
+                                <span class="font-black {{ ($safra->lucro ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
+                                    R$ {{ number_format($safra->lucro ?? 0, 2, ',', '.') }}
+                                </span>
+                                <span class="text-[10px] text-gray-400">R$ {{ number_format($safra->receitas ?? 0, 2, ',', '.') }} rec.</span>
+                            </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-gray-500">
-                            <div class="flex flex-col items-center justify-center">
-                                <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-                                <span class="text-sm font-medium">Nenhum dado financeiro encontrado para as safras.</span>
-                            </div>
-                        </td>
+                        <td colspan="2" class="px-6 py-12 text-center text-gray-400 text-xs italic font-medium">Sem dados consolidadores.</td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-    <!-- Distribuição de Custos -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col relative">
-        <div class="absolute inset-x-0 top-0 h-1 bg-amber-500"></div>
-        <div class="p-6 border-b border-gray-50">
-            <h3 class="text-lg font-bold text-gray-900">Distribuição de Custos por Categoria</h3>
-        </div>
-        <div class="p-6 flex-1 flex justify-center items-center min-h-[300px]">
-            @if($custosLabels->isEmpty())
-                <p class="text-gray-500 text-sm text-center">Não há custos registrados para gerar o gráfico.</p>
-            @else
-                <canvas id="costDistributionChart" class="max-h-[300px]"></canvas>
-            @endif
-        </div>
-    </div>
-
-    <div class="flex flex-col gap-6">
-        <!-- KPI Custo por Hectare -->
-        <div class="bg-gradient-to-br from-fuchsia-600 to-indigo-700 rounded-2xl shadow-sm border border-fuchsia-700 p-6 md:p-8 text-white relative overflow-hidden">
-            <div class="relative z-10 flex flex-col justify-center items-center h-full text-center">
-                <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm shadow-sm border border-white/10">
-                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <!-- Mobile View (Cards) -->
+        <div class="md:hidden flex flex-col divide-y divide-gray-50">
+            @forelse ($relatorioLucroPorSafra as $safra)
+            <div class="p-4 flex flex-col gap-3">
+                <div class="flex justify-between items-center mb-1">
+                    <div>
+                        <h4 class="font-black text-gray-900 text-xs tracking-tight leading-none mb-1">{{ $safra->cultura }}</h4>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] text-gray-400 font-bold uppercase">{{ \Carbon\Carbon::parse($safra->data_inicio)->year }}</span>
+                            @if(!$safra->data_fim)
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                            <span class="text-[8px] text-emerald-600 font-black uppercase tracking-tighter">Ativa</span>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[7px] text-gray-400 font-black uppercase mb-0.5 tracking-widest">Resultado</div>
+                        <span class="text-[11px] font-black {{ ($safra->lucro ?? 0) >= 0 ? 'text-emerald-600 bg-emerald-50/50' : 'text-rose-600 bg-rose-50/50' }} px-3 py-1 rounded-full border border-current/5">
+                            R$ {{ number_format($safra->lucro ?? 0, 2, ',', '.') }}
+                        </span>
+                    </div>
                 </div>
-                <h3 class="text-fuchsia-100 font-medium mb-1">Análise de Custo por Hectare (KPI)</h3>
-                <h2 class="text-4xl md:text-5xl font-black tracking-tight drop-shadow-sm">R$ {{ number_format($custoPorHectare, 2, ',', '.') }}</h2>
-                <span class="text-fuchsia-200 mt-1 font-semibold text-lg">/ ha</span>
-                <p class="text-fuchsia-200 mt-4 text-sm font-medium">Média centralizada de investimento por hectare plantado.</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-gray-50/50 p-2.5 rounded-xl border border-gray-100/50 flex flex-col">
+                        <span class="text-[7px] text-gray-400 font-black uppercase tracking-widest mb-1">Entradas</span>
+                        <span class="text-[10px] font-bold text-gray-900">R$ {{ number_format($safra->receitas ?? 0, 2, ',', '.') }}</span>
+                    </div>
+                    <div class="bg-gray-50/50 p-2.5 rounded-xl border border-gray-100/50 flex flex-col">
+                        <span class="text-[7px] text-gray-400 font-black uppercase tracking-widest mb-1">Saídas</span>
+                        <span class="text-[10px] font-bold text-gray-900">R$ {{ number_format($safra->despesas ?? 0, 2, ',', '.') }}</span>
+                    </div>
+                </div>
             </div>
-            <!-- Decorative circle -->
-            <div class="absolute -bottom-16 -right-16 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-            <div class="absolute -top-16 -left-16 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+            @empty
+            <div class="p-8 text-center text-gray-400 text-xs italic font-medium">Sem dados consolidadores.</div>
+            @endforelse
         </div>
+    </div>
 
-        <!-- Fluxo de Caixa -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex-1 relative">
-            <div class="absolute inset-x-0 top-0 h-1 bg-emerald-500"></div>
-            <div class="p-6 border-b border-gray-50 flex items-center justify-between">
-                <h3 class="text-lg font-bold text-gray-900">Relatório de Fluxo de Caixa</h3>
-            </div>
-            <div class="p-6 min-h-[250px] flex items-center justify-center">
-                @if($fluxoLabels->isEmpty())
-                    <p class="text-gray-500 text-sm text-center">Não há lançamentos para gerar o fluxo de caixa.</p>
-                @else
-                    <canvas id="cashFlowChart" class="max-h-[250px]"></canvas>
-                @endif
-            </div>
+    <!-- Fluxo de Caixa -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden flex flex-col relative">
+        <div class="absolute inset-x-0 top-0 h-1 bg-indigo-500"></div>
+        <div class="p-5 border-b border-gray-50 flex items-center justify-between">
+            <h3 class="text-sm font-black text-gray-400 uppercase tracking-widest">Fluxo de Caixa Mensal</h3>
+        </div>
+        <div class="p-6 min-h-[300px] flex items-center justify-center">
+            @if($fluxoLabels->isEmpty())
+                <p class="text-gray-400 font-medium text-sm italic text-center">Dados insuficientes para fluxo de caixa.</p>
+            @else
+                <canvas id="cashFlowChart" class="max-h-[300px]"></canvas>
+            @endif
         </div>
     </div>
 </div>
@@ -156,7 +182,15 @@
                     responsive: true, 
                     maintainAspectRatio: false,
                     plugins: { 
-                        legend: { position: 'bottom', labels: { font: { family: "'Inter', sans-serif" } } },
+                        legend: { 
+                            position: 'bottom', 
+                            labels: { 
+                                padding: 20,
+                                font: { family: "'Inter', sans-serif", size: 11, weight: '600' },
+                                usePointStyle: true,
+                                boxWidth: 8
+                            } 
+                        },
                         datalabels: {
                             formatter: (value, ctx) => {
                                 const numericValue = parseFloat(value);

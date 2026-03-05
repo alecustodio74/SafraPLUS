@@ -4,15 +4,15 @@
 
 @section('content')
 
-<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Gerenciamento de Mão de Obra</h2>
-        <p class="text-sm text-gray-500 mt-1">Controle os custos e cadastros de funcionários/serviços.</p>
-    </div>
+<div class="mb-6 flex justify-end">
     <a href="{{ route('mao-de-obra.create') }}" class="px-5 py-2.5 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors shadow-sm flex items-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5V4H2v16h5m10 0v-5H7v5m10 0H7"></path></svg>
         Nova Mão de Obra
     </a>
+</div>
+
+<div class="mb-6">
+    <p class="text-sm text-gray-500">Controle os custos e cadastros de funcionários/serviços.</p>
 </div>
 
 @if (session('error'))
@@ -32,7 +32,8 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-indigo-500"></div>
     <div class="overflow-x-auto pl-1.5">
-        <table class="w-full text-left border-collapse">
+        <!-- Desktop Table View -->
+        <table class="w-full text-left border-collapse hidden md:table">
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
                     <th class="px-6 py-4">Nome / Tipo</th>
@@ -95,6 +96,58 @@
                 @endforelse
             </tbody>
         </table>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden flex flex-col p-4 gap-4 bg-gray-50/50">
+            @forelse ($maoDeObras as $item)
+            <div class="bg-white rounded-xl p-4 border border-gray-100 flex flex-col shadow-sm relative">
+                <!-- Ações Absolute Top Right -->
+                <div class="absolute top-4 right-4 flex gap-2">
+                    <a href="{{ route('mao-de-obra.edit', $item->id) }}" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </a>
+                    <form action="{{ route('mao-de-obra.destroy', $item->id) }}" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este item?')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="mb-3 pr-16 text-left">
+                    <h4 class="font-bold text-gray-900 text-lg leading-tight">{{ $item->nome_ou_tipo }}</h4>
+                    <p class="text-xs text-indigo-600 font-bold mt-1 uppercase tracking-wider">Mão de Obra</p>
+                </div>
+
+                <div class="mt-2 flex items-center justify-between">
+                    <div>
+                        <span class="text-[10px] text-gray-400 uppercase font-black block mb-0.5">Custo Diário/Hora</span>
+                        <span class="font-black text-lg text-indigo-700 leading-none">
+                            R$ {{ number_format($item->custo_diario_hora, 2, ',', '.') }}
+                        </span>
+                    </div>
+
+                    @can('is-admin')
+                    <div class="flex items-center gap-2">
+                        @php
+                            $nomeProd = $item->produtor->nome ?? 'N/A';
+                            $primeiraLetra = $nomeProd !== 'N/A' ? strtoupper(substr($nomeProd, 0, 1)) : '?';
+                        @endphp
+                        <span class="text-[10px] text-gray-500 font-medium">{{ $nomeProd }}</span>
+                        <div class="w-5 h-5 rounded-full bg-gray-100 flex items-center justify-center text-[9px] font-bold text-gray-600 shrink-0">
+                            {{ $primeiraLetra }}
+                        </div>
+                    </div>
+                    @endcan
+                </div>
+            </div>
+            @empty
+            <div class="p-8 text-center bg-white rounded-xl border border-dashed border-gray-200">
+                <p class="text-sm font-medium text-gray-500">Nenhum item de mão de obra cadastrado.</p>
+            </div>
+            @endforelse
+        </div>
     </div>
 </div>
 

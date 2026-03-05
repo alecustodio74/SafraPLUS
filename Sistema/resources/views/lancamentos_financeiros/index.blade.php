@@ -4,15 +4,15 @@
 
 @section('content')
 
-<div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-    <div>
-        <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Lançamentos Financeiros</h2>
-        <p class="text-sm text-gray-500 mt-1">Controle de receitas e despesas vinculadas às safras.</p>
-    </div>
+<div class="mb-6 flex justify-end">
     <a href="{{ route('lancamentos-financeiros.create') }}" class="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm flex items-center gap-2">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
         Novo Lançamento
     </a>
+</div>
+
+<div class="mb-6">
+    <p class="text-sm text-gray-500">Controle suas receitas e despesas vinculadas às safras.</p>
 </div>
 
 @if (session('error'))
@@ -32,7 +32,9 @@
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative">
     <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-blue-500"></div>
     <div class="overflow-x-auto pl-1.5">
-        <table class="w-full text-left border-collapse">
+        
+        <!-- Desktop Table View -->
+        <table class="w-full text-left border-collapse hidden md:table">
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
                     <th class="px-6 py-4">Data</th>
@@ -117,6 +119,55 @@
                 @endforelse
             </tbody>
         </table>
+
+        <!-- Mobile Card View -->
+        <div class="md:hidden flex flex-col p-4 gap-4 bg-gray-50/50">
+            @forelse ($lancamentos as $lancamento)
+            <div class="bg-white rounded-xl p-4 border border-gray-100 flex flex-col gap-3 shadow-sm relative">
+                <!-- Ações Absolute Top Right -->
+                <div class="absolute top-4 right-4 flex gap-2">
+                    <a href="{{ route('lancamentos-financeiros.edit', $lancamento->id) }}" class="p-1.5 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors" title="Editar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    </a>
+                    <form action="{{ route('lancamentos-financeiros.destroy', $lancamento->id) }}" method="POST" class="inline">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="p-1.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors" title="Excluir" onclick="return confirm('Excluir este lançamento?')">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="flex items-center gap-2 mb-1">
+                    @if ($lancamento->tipo_receita_custo == 'receita')
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 uppercase tracking-wider">Receita</span>
+                    @else
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold bg-rose-100 text-rose-700 uppercase tracking-wider">Despesa</span>
+                    @endif
+                    <span class="text-xs text-gray-500 font-medium">{{ \Carbon\Carbon::parse($lancamento->data)->format('d/m/Y') }}</span>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-gray-900 text-base leading-tight pr-16">{{ $lancamento->descricao }}</h4>
+                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span class="truncate">{{ $lancamento->safra->cultura ?? 'N/A' }} &bull; {{ $lancamento->categoria->nome ?? 'Sem Categoria' }}</span>
+                    </p>
+                </div>
+                
+                <div class="mt-2 pt-3 border-t border-gray-100 flex justify-between items-center">
+                    <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Valor Registrado</span>
+                    <span class="font-black text-lg {{ $lancamento->tipo_receita_custo == 'receita' ? 'text-emerald-600' : 'text-rose-600' }}">
+                        R$ {{ number_format($lancamento->valor_total, 2, ',', '.') }}
+                    </span>
+                </div>
+            </div>
+            @empty
+            <div class="p-8 text-center bg-white rounded-xl border border-dashed border-gray-200">
+                <p class="text-sm font-medium text-gray-500">Nenhum lançamento financeiro.</p>
+            </div>
+            @endforelse
+        </div>
     </div>
 </div>
 

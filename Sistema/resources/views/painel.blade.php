@@ -4,15 +4,28 @@
 
 @section('content')
 
-<!-- Header Section -->
-<div class="mb-8">
-    <h2 class="text-3xl font-bold text-gray-900 tracking-tight">Visão Geral</h2>
-    <p class="text-base text-gray-500 mt-2">Bem-vindo(a) ao seu sistema, SafraPLUS. Acompanhe as principais métricas e finanças da sua propriedade.</p>
-</div>
+<!-- Header Section Removida por redundância -->
 
 <!-- Financial Summary Cards -->
 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
     
+    <!-- Saldo Card -->
+    <div class="bg-[#059669] rounded-2xl shadow-md p-6 relative overflow-hidden text-white group hover:shadow-lg transition-shadow">
+        <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+        <div class="relative z-10 flex justify-between items-start">
+            <div>
+                <p class="text-xs font-bold text-green-100 uppercase tracking-wider mb-1">Saldo Atual</p>
+                <h3 class="text-3xl font-black text-white">R$ {{ number_format($saldoAtual ?? 0, 2, ',', '.') }}</h3>
+            </div>
+            <div class="w-12 h-12 rounded-xl bg-white/20 text-white flex items-center justify-center">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+        </div>
+        <div class="relative z-10 mt-4 text-sm text-green-50 font-medium">
+            Total consolidado em caixa
+        </div>
+    </div>
+
     <!-- Receitas Card -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 relative overflow-hidden group hover:shadow-md transition-shadow">
         <div class="absolute right-0 top-0 w-24 h-24 bg-green-50 rounded-bl-full -mr-4 -mt-4 transition-transform group-hover:scale-110"></div>
@@ -47,22 +60,6 @@
         </div>
     </div>
 
-    <!-- Saldo Card -->
-    <div class="bg-[#059669] rounded-2xl shadow-md p-6 relative overflow-hidden text-white group hover:shadow-lg transition-shadow">
-        <div class="absolute right-0 top-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
-        <div class="relative z-10 flex justify-between items-start">
-            <div>
-                <p class="text-xs font-bold text-green-100 uppercase tracking-wider mb-1">Saldo Atual</p>
-                <h3 class="text-3xl font-black text-white">R$ {{ number_format($saldoAtual ?? 0, 2, ',', '.') }}</h3>
-            </div>
-            <div class="w-12 h-12 rounded-xl bg-white/20 text-white flex items-center justify-center">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            </div>
-        </div>
-        <div class="relative z-10 mt-4 text-sm text-green-50 font-medium">
-            Total consolidado em caixa
-        </div>
-    </div>
 </div>
 
 <!-- Safras Recentes -->
