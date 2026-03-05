@@ -1,72 +1,67 @@
 @extends('layouts.app')
 
+@section('header_title', 'Novo Produtor')
+
 @section('content')
-<div class="max-w-3xl mx-auto space-y-6">
-    <!-- Page Header -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-display font-bold text-slate-800">Cadastrar Produtor</h1>
-        <p class="text-slate-500 mt-1">Adicione um novo produtor ou administrador ao sistema.</p>
-    </div>
 
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden relative">
-        <div class="absolute top-0 left-0 w-2 h-full bg-primary-500"></div>
-        <div class="p-6 sm:p-8">
-            <form action="{{ route('produtores.store') }}" method="POST" class="space-y-6">
-                @csrf
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="nome" class="block text-sm font-medium text-slate-700 mb-1">Nome Completo</label>
-                        <input type="text" name="nome" id="nome" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required placeholder="Ex: Henrique Cruz de Lima">
-                    </div>
+<div class="mb-6">
+    <h2 class="text-2xl font-bold text-gray-900 tracking-tight">Novo Produtor</h2>
+    <p class="text-sm text-gray-500 mt-1">Cadastre um novo usuário proprietário rural.</p>
+</div>
 
-                    <div>
-                        <label for="email" class="block text-sm font-medium text-slate-700 mb-1">Email (Usado para Login)</label>
-                        <input type="email" name="email" id="email" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required autocomplete="username" placeholder="email@exemplo.com">
-                    </div>
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden max-w-2xl">
+    <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-[#059669]"></div>
+    
+    <div class="p-8 pl-10">
+        <form action="{{ route('produtores.store') }}" method="POST">
+            @csrf
+            
+            <div class="mb-5">
+                <label for="nome" class="block text-sm font-medium text-gray-700 mb-2">Nome Completo</label>
+                <input type="text" name="nome" id="nome" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#059669] focus:border-[#059669] px-4 py-3 transition-colors outline-none" required placeholder="Henrique Cruz de Lima">
+            </div>
+
+            <div class="mb-5">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email (Login)</label>
+                <input type="email" name="email" id="email" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#059669] focus:border-[#059669] px-4 py-3 transition-colors outline-none" required placeholder="email@email.com">
+            </div>
+
+            <div class="mb-5">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Senha</label>
+                <input type="password" name="password" id="password" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#059669] focus:border-[#059669] px-4 py-3 transition-colors outline-none" required placeholder="••••••••">
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-5 mb-5">
+                <div class="flex-1">
+                    <label for="cpf_cnpj" class="block text-sm font-medium text-gray-700 mb-2">CPF / CNPJ (apenas números)</label>
+                    <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#059669] focus:border-[#059669] px-4 py-3 transition-colors outline-none" required placeholder="***.***.***-**">
                 </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label for="password" class="block text-sm font-medium text-slate-700 mb-1">Senha Inicial</label>
-                        <input type="password" name="password" id="password" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required autocomplete="new-password" placeholder="••••••••">
-                    </div>
-                    <div>
-                        <label for="telefone" class="block text-sm font-medium text-slate-700 mb-1">Telefone / WhatsApp</label>
-                        <input type="text" name="telefone" id="telefone" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" placeholder="(18) 99999-9999">
-                    </div>
+                <div class="flex-1">
+                    <label for="telefone" class="block text-sm font-medium text-gray-700 mb-2">Telefone</label>
+                    <input type="text" name="telefone" id="telefone" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#059669] focus:border-[#059669] px-4 py-3 transition-colors outline-none" placeholder="(18) 93848-5461">
                 </div>
-                
-                <div>
-                    <label for="cpf_cnpj" class="block text-sm font-medium text-slate-700 mb-1">CPF / CNPJ (apenas números)</label>
-                    <input type="text" name="cpf_cnpj" id="cpf_cnpj" class="w-full border-slate-300 bg-slate-50 text-slate-900 focus:bg-white focus:border-primary-500 focus:ring-primary-500 rounded-xl shadow-sm transition-colors px-4 py-2.5" required placeholder="000.000.000-00">
-                </div>
+            </div>
 
-                <div class="p-5 bg-slate-50 border border-slate-100 rounded-xl space-y-4">
-                    <h3 class="font-semibold text-slate-800 text-sm uppercase tracking-wider">Dados da Propriedade (Opcional)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label for="propriedade" class="block text-sm font-medium text-slate-700 mb-1">Nome da Propriedade</label>
-                            <input type="text" name="propriedade" id="propriedade" class="w-full border-slate-300 bg-white text-slate-900 focus:border-primary-500 focus:ring-primary-500 rounded-lg shadow-sm transition-colors px-3 py-2" placeholder="Ex: Fazenda Colorado">
-                        </div>
+            <div class="mb-5">
+                <label for="propriedade" class="block text-sm font-medium text-gray-700 mb-2">Nome da Propriedade</label>
+                <input type="text" name="propriedade" id="propriedade" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#059669] focus:border-[#059669] px-4 py-3 transition-colors outline-none" placeholder="Fazenda Colorado">
+            </div>
 
-                        <div>
-                            <label for="cultura_principal" class="block text-sm font-medium text-slate-700 mb-1">Cultura Principal</label>
-                            <input type="text" name="cultura_principal" id="cultura_principal" class="w-full border-slate-300 bg-white text-slate-900 focus:border-primary-500 focus:ring-primary-500 rounded-lg shadow-sm transition-colors px-3 py-2" placeholder="Ex: Soja, Milho, Arroz">
-                        </div>
-                    </div>
-                </div>
+            <div class="mb-6">
+                <label for="cultura_principal" class="block text-sm font-medium text-gray-700 mb-2">Cultura Principal</label>
+                <input type="text" name="cultura_principal" id="cultura_principal" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-[#059669] focus:border-[#059669] px-4 py-3 transition-colors outline-none" placeholder="Arroz / Soja / Milho">
+            </div>
 
-                <div class="flex items-center gap-4 pt-4 border-t border-slate-100">
-                    <button type="submit" class="inline-flex justify-center items-center px-6 py-2.5 bg-primary-600 border border-transparent rounded-xl font-bold text-sm text-white shadow-md shadow-primary-500/30 hover:bg-primary-700 hover:shadow-lg hover:shadow-primary-600/40 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200">
-                        Salvar Produtor
-                    </button>
-                    <a href="{{ route('produtores.index') }}" class="text-sm font-medium text-slate-600 bg-white px-4 py-2.5 rounded-xl border border-slate-200 shadow-sm hover:bg-slate-50 transition-colors">
-                        Cancelar
-                    </a>
-                </div>
-            </form>
-        </div>
+            <div class="pt-2 flex items-center gap-3">
+                <button type="submit" class="px-6 py-2.5 bg-[#059669] text-white font-semibold rounded-xl hover:bg-[#047857] transition-colors shadow-sm">
+                    Salvar Produtor
+                </button>
+                <a href="{{ route('produtores.index') }}" class="px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm">
+                    Cancelar
+                </a>
+            </div>
+        </form>
     </div>
 </div>
+
 @endsection

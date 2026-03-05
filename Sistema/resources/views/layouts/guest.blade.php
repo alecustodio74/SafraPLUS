@@ -6,52 +6,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'SafraPLUS') }}</title>
+
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="font-sans antialiased text-slate-800 bg-surface">
-    <div class="min-h-screen flex">
+<body class="font-sans text-gray-900 antialiased h-screen overflow-hidden bg-white">
+    <div class="flex h-screen w-full">
         
-        <!-- Left Side: Branding / Visual (Hidden on mobile) -->
-        <div class="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 to-primary-900 relative overflow-hidden items-center justify-center p-12">
-            <!-- Decorative Elements -->
-            <div class="absolute -top-32 -left-32 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl"></div>
-            <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-primary-400/20 rounded-full blur-3xl"></div>
+        <!-- Lado Esquerdo: Banner Agro -->
+        <div class="hidden lg:flex lg:w-1/2 bg-[#059669] relative overflow-hidden items-center justify-center">
+            <div class="absolute inset-0 bg-gradient-to-br from-[#064e3b]/80 to-[#059669]/60 z-10"></div>
+            <img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-60" alt="Campos de Plantação">
             
-            <div class="relative z-10 flex flex-col items-center text-center">
-                <a href="/">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo SafraPLUS" class="w-48 h-auto mb-8 drop-shadow-xl transition transform hover:scale-105 duration-300">
-                </a>
-                <h1 class="text-4xl font-display font-bold text-white mb-4">Gestão Inteligente para o Agronegócio</h1>
-                <p class="text-primary-100 text-lg max-w-md">Controle suas safras, insumos e finanças com uma plataforma moderna e eficiente.</p>
-            </div>
-        </div>
-
-        <!-- Right Side: Auth Form -->
-        <div class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:flex-none lg:w-1/2 lg:px-20 xl:px-24 bg-surface relative">
-            
-            <!-- Mobile Logo (Visible only on small screens) -->
-            <div class="flex lg:hidden justify-center mb-8">
-                <a href="/">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo SafraPLUS" class="w-32 h-auto drop-shadow-md">
-                </a>
-            </div>
-
-            <div class="mx-auto w-full max-w-sm lg:w-96">
-                <!-- Auth Card -->
-                <div class="bg-white py-8 px-6 shadow-xl sm:rounded-2xl sm:px-10 border border-slate-100">
-                    {{ $slot }}
-                </div>
+            <div class="relative z-20 p-12 text-white w-full max-w-xl">
+                <h1 class="text-5xl font-black mb-6 tracking-tight drop-shadow-md">Gestão Inteligente<br />Para o Campo.</h1>
+                <p class="text-xl text-green-50/90 font-medium leading-relaxed drop-shadow-sm">Acompanhe suas safras, gerencie seus custos e maximize a lucratividade da sua fazenda através do SafraPLUS.</p>
                 
-                <!-- Footer Info -->
-                <p class="mt-8 text-center text-sm text-slate-500">
-                    &copy; {{ date('Y') }} SafraPLUS. Todos os direitos reservados.
-                </p>
+                <div class="mt-12 flex items-center gap-4">
+                    <div class="w-12 h-1 bg-green-400 rounded-full"></div>
+                    <div class="w-4 h-1 bg-green-400/40 rounded-full"></div>
+                    <div class="w-4 h-1 bg-green-400/40 rounded-full"></div>
+                </div>
             </div>
         </div>
 
+        <!-- Lado Direito: Formulários (Login/Registro) -->
+        <div class="w-full lg:w-1/2 flex flex-col p-8 sm:p-12 lg:p-20 relative overflow-y-auto">
+            <div class="flex-1"></div>
+            <div class="w-full max-w-sm mx-auto flex-none py-8">
+                <!-- Logo Topo -->
+                <div class="mb-10 text-center sm:text-left">
+                    <a href="/" class="inline-block">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SafraPLUS" class="h-10 w-auto" style="height: 40px; width: auto;">
+                    </a>
+                </div>
+
+                <!-- O slot de conteúdo (o form em si) vai aqui -->
+                {{ $slot }}
+                
+            </div>
+            <div class="flex-1"></div>
+        </div>
     </div>
 </body>
 
