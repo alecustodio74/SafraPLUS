@@ -69,10 +69,10 @@
     <!-- Fluxo de Caixa -->
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden flex flex-col">
         <div class="w-full h-1.5 bg-indigo-500"></div>
-        <div class="px-6 pt-6 pb-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
+        <div class="px-6 pt-6 pb-3 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
             <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest">Fluxo de Caixa Mensal</h3>
         </div>
-        <div class="p-6 min-h-[320px] flex items-center justify-center">
+        <div class="px-6 pb-6 pt-0 min-h-[320px] flex items-center justify-center">
             @if($fluxoLabels->isEmpty())
                 <p class="text-gray-400 font-medium text-sm italic text-center">Dados insuficientes para fluxo de caixa.</p>
             @else
@@ -89,13 +89,21 @@
         <div class="w-full h-1 bg-amber-500"></div>
         <div class="px-6 pt-6 pb-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
             <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Estrutura de Gastos</h3>
+            @if(isset($custosData) && collect($custosData)->sum() > 0)
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total:</span>
+                    <span class="text-lg font-black text-rose-500 bg-rose-50 px-4 py-1.5 rounded-lg shadow-sm border border-rose-100">
+                        R$ {{ number_format(collect($custosData)->sum(), 2, ',', '.') }}
+                    </span>
+                </div>
+            @endif
         </div>
-        <div class="p-6 flex justify-center items-center min-h-[300px]">
+        <div class="p-6 flex justify-center items-center overflow-x-auto w-full">
             @if($custosLabels->isEmpty())
-                <p class="text-gray-400 font-medium text-sm italic text-center">Nenhum custo registrado para análise.</p>
+                <p class="text-gray-400 font-medium text-sm italic text-center min-h-[300px] flex items-center">Nenhum custo registrado para análise.</p>
             @else
-                <div class="w-full max-w-sm mx-auto">
-                    <canvas id="costDistributionChart"></canvas>
+                <div class="w-full" style="min-height: {{ max(300, count($custosLabels) * 35) }}px; height: {{ count($custosLabels) * 35 }}px;">
+                    <canvas id="costDistributionChart" class="w-full h-full"></canvas>
                 </div>
             @endif
         </div>
@@ -116,7 +124,7 @@
             const dataCost = @json($custosData);
 
             new Chart(ctxCost, {
-                type: 'pie',
+                type: 'bar',
                 data: {
                     labels: labelsCost,
                     datasets: [{
@@ -129,53 +137,88 @@
                             'rgba(16, 185, 129, 0.85)',  // emerald-500
                             'rgba(217, 70, 239, 0.85)',  // fuchsia-500
                             'rgba(99, 102, 241, 0.85)',  // indigo-500
+                            'rgba(14, 165, 233, 0.85)',  // sky-500
+                            'rgba(236, 72, 153, 0.85)',  // pink-500
+                            'rgba(139, 92, 246, 0.85)'   // violet-500
                         ],
-                        borderColor: '#ffffff',
-                        borderWidth: 2,
-                        hoverOffset: 4
+                        borderRadius: 6, // slightly more rounded for thinner bars
+                        barPercentage: 0.45, // Thinner bars
+                        categoryPercentage: 0.6 // Tighter grouping
                     }]
                 },
                 options: { 
+                    indexAxis: 'y',
                     responsive: true, 
                     maintainAspectRatio: false,
                     plugins: { 
                         legend: { 
-                            position: 'bottom', 
-                            labels: { 
-                                padding: 20,
-                                font: { family: "'Inter', sans-serif", size: 11, weight: '600' },
-                                usePointStyle: true,
-                                boxWidth: 8
-                            } 
+                            display: false 
                         },
                         datalabels: {
-                            formatter: (value, ctx) => {
-                                const numericValue = parseFloat(value);
-                                const sum = ctx.chart.data.datasets[0].data.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
-                                if (sum === 0) return '0%';
-                                const percentage = (numericValue * 100 / sum).toFixed(1) + '%';
-                                return percentage;
-                            },
-                            color: '#fff',
-                            font: { weight: 'bold', size: 13, family: "'Inter', sans-serif" }
+                            labels: {
+                                currency: {
+                                    anchor: 'end',
+                                    align: 'right',
+                                    color: '#6b7280', // gray-500
+                                    font: { weight: '800', size: 12, family: "'Inter', sans-serif" },
+                                    formatter: (value) => {
+                                        return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(parseFloat(value));
+                                    },
+                                    offset: 4,
+                                    padding: { left: 4, right: 0 }
+                                },
+                                percentage: {
+                                    anchor: 'end',
+                                    align: 'right',
+                                    color: '#f43f5e', // rose-500
+                                    font: { weight: '800', size: 12, family: "'Inter', sans-serif" },
+                                    formatter: (value, context) => {
+                                        const sum = context.chart.data.datasets[0].data.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
+                                        return sum === 0 ? '(0%)' : '(' + (parseFloat(value) * 100 / sum).toFixed(1) + '%)';
+                                    },
+                                    offset: (context) => {
+                                        // Calculate exact pixel width of the currency text to perfectly position the percentage right after it
+                                        const val = parseFloat(context.dataset.data[context.dataIndex]);
+                                        const text = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+                                        context.chart.ctx.font = "800 12px 'Inter', sans-serif";
+                                        const textWidth = context.chart.ctx.measureText(text).width;
+                                        // currency offset(4) + currency left padding(4) + textWidth + gap(4)
+                                        return 4 + 4 + textWidth + 4;
+                                    },
+                                    padding: { left: 0 }
+                                }
+                            }
                         },
                         tooltip: {
                             titleFont: { family: "'Inter', sans-serif" },
                             bodyFont: { family: "'Inter', sans-serif" },
                             callbacks: {
                                 label: function(context) {
-                                    let label = context.label || '';
-                                    if (label) {
-                                        label += ': ';
-                                    }
-                                    if (context.parsed !== null) {
-                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed);
+                                    let label = 'Custo: ';
+                                    if (context.parsed.x !== null) {
+                                        label += new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(context.parsed.x);
                                     }
                                     return label;
                                 }
                             }
                         }
-                    } 
+                    },
+                    scales: {
+                        x: {
+                            display: false, // Hide X axis
+                            grid: { display: false }
+                        },
+                        y: {
+                            grid: { display: false, drawBorder: false },
+                            ticks: {
+                                font: { family: "'Inter', sans-serif", size: 12, weight: '500' },
+                                color: '#4b5563'
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: { right: 140 } // Prevent cutoff of data labels
+                    }
                 }
             });
         @endif
@@ -226,7 +269,16 @@
                         intersect: false,
                     },
                     plugins: {
-                        legend: { position: 'top', labels: { font: { family: "'Inter', sans-serif" }, usePointStyle: true, boxWidth: 8, padding: 20 } },
+                        legend: { 
+                            position: 'top', 
+                            align: 'center',
+                            labels: { 
+                                font: { family: "'Inter', sans-serif" }, 
+                                usePointStyle: true,
+                                boxWidth: 8,
+                                padding: 10 // Pushes legend items UP by reducing vertical padding inside the legend box
+                            },
+                        },
                         
                         tooltip: {
                             titleFont: { family: "'Inter', sans-serif" },
@@ -268,6 +320,11 @@
                                 font: { family: "'Inter', sans-serif", size: 11 },
                                 color: '#6b7280'
                             }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 25 // Reduced from 40 to bring lines a bit up, while keeping enough gap from legend
                         }
                     }
                 }
