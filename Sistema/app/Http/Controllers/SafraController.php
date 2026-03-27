@@ -12,41 +12,26 @@ class SafraController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $safras = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $safras = Safra::with('produtor')->orderBy('data_inicio', 'desc')->paginate(10);
-        }
-        else {
-            $safras = $usuarioLogado->safras()->orderBy('data_inicio', 'desc')->paginate(10);
-        }
+        $safras = $usuarioLogado->safras()->orderBy('data_inicio', 'desc')->paginate(10);
 
         return view('safras.index', compact('safras'));
     }
 
     public function create()
     {
-        $produtores = null;
-        if (Auth::user()->can('is-admin')) {
-            $produtores = Produtor::all();
-        }
-
         $culturasPredefinidas = ['Soja', 'Milho', 'Trigo', 'Arroz', 'Feijão', 'Cana-de-açúcar', 'Algodão', 'Amendoim', 'Sorgo', 'Café'];
         $culturasNoBanco = Safra::select('cultura')->distinct()->pluck('cultura')->toArray();
         $culturas = array_unique(array_merge($culturasPredefinidas, $culturasNoBanco));
         sort($culturas);
 
-        return view('safras.create', compact('produtores', 'culturas'));
+        return view('safras.create', compact('culturas'));
     }
 
     public function store(Request $request)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-
-        if ($usuarioLogado->can('is-produtor')) {
-            $dados['produtor_id'] = $usuarioLogado->id;
-        }
+        $dados['produtor_id'] = $usuarioLogado->id;
 
         Safra::create($dados);
 
@@ -56,14 +41,7 @@ class SafraController extends Controller
     public function show($id)
     {
         $usuarioLogado = Auth::user();
-        $safra = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $safra = Safra::findOrFail($id);
-        }
-        else {
-            $safra = $usuarioLogado->safras()->findOrFail($id);
-        }
+        $safra = $usuarioLogado->safras()->findOrFail($id);
 
         return view('safras.show', compact('safra'));
     }
@@ -71,39 +49,24 @@ class SafraController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $produtores = null;
-        $safra = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $safra = Safra::findOrFail($id);
-            $produtores = Produtor::all();
-        }
-        else {
-            $safra = $usuarioLogado->safras()->findOrFail($id);
-        }
+        $safra = $usuarioLogado->safras()->findOrFail($id);
 
         $culturasPredefinidas = ['Soja', 'Milho', 'Trigo', 'Arroz', 'Feijão', 'Cana-de-açúcar', 'Algodão', 'Amendoim', 'Sorgo', 'Café'];
         $culturasNoBanco = Safra::select('cultura')->distinct()->pluck('cultura')->toArray();
         $culturas = array_unique(array_merge($culturasPredefinidas, $culturasNoBanco));
         sort($culturas);
 
-        return view('safras.edit', compact('safra', 'produtores', 'culturas'));
+        return view('safras.edit', compact('safra', 'culturas'));
     }
 
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-        $safra = null;
+        $safra = $usuarioLogado->safras()->findOrFail($id);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $safra = Safra::findOrFail($id);
-        }
-        else {
-            $safra = $usuarioLogado->safras()->findOrFail($id);
-            if (isset($dados['produtor_id'])) {
-                unset($dados['produtor_id']);
-            }
+        if (isset($dados['produtor_id'])) {
+            unset($dados['produtor_id']);
         }
 
         $safra->update($dados);
@@ -114,14 +77,7 @@ class SafraController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $safra = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $safra = Safra::findOrFail($id);
-        }
-        else {
-            $safra = $usuarioLogado->safras()->findOrFail($id);
-        }
+        $safra = $usuarioLogado->safras()->findOrFail($id);
 
         $safra->delete();
 

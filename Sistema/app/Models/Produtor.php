@@ -21,7 +21,6 @@ class Produtor extends Authenticatable
         'telefone',
         'propriedade',
         'cultura_principal',
-        'role',
     ];
 
     /**

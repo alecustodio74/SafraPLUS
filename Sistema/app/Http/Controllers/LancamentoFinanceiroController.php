@@ -13,39 +13,21 @@ class LancamentoFinanceiroController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $lancamentos = null;
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $lancamentos = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
+            ->with('safra', 'categoria')
+            ->orderBy('data_lancamento', 'desc')
+            ->orderBy('valor_total', 'desc')
+            ->paginate(10);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $lancamentos = LancamentoFinanceiro::with('safra', 'categoria')
-                ->orderBy('data_lancamento', 'desc')
-                ->orderBy('valor_total', 'desc')
-                ->paginate(10);
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $lancamentos = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-                ->with('safra', 'categoria')
-                ->orderBy('data_lancamento', 'desc')
-                ->orderBy('valor_total', 'desc')
-                ->paginate(10);
-        }
         return view('lancamentos_financeiros.index', compact('lancamentos'));
     }
 
     public function create()
     {
         $usuarioLogado = Auth::user();
-        $safras = null;
-        $categorias = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $safras = Safra::all();
-            $categorias = Categoria::all();
-        }
-        else {
-            $safras = $usuarioLogado->safras;
-            $categorias = $usuarioLogado->categorias;
-        }
+        $safras = $usuarioLogado->safras;
+        $categorias = $usuarioLogado->categorias;
 
         return view('lancamentos_financeiros.create', compact('safras', 'categorias'));
     }
@@ -63,9 +45,7 @@ class LancamentoFinanceiroController extends Controller
             'data_lancamento' => 'required|date',
         ]);
 
-        if ($usuarioLogado->can('is-produtor')) {
-            $usuarioLogado->safras()->findOrFail($request->safra_id);
-        }
+        $usuarioLogado->safras()->findOrFail($request->safra_id);
 
         LancamentoFinanceiro::create($dados);
 
@@ -75,21 +55,10 @@ class LancamentoFinanceiroController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $lancamento = null;
-        $safras = null;
-        $categorias = Categoria::all();
-
-        if ($usuarioLogado->can('is-admin')) {
-            $lancamento = LancamentoFinanceiro::findOrFail($id);
-            $safras = Safra::all();
-            $categorias = Categoria::all();
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
-            $safras = $usuarioLogado->safras;
-            $categorias = $usuarioLogado->categorias;
-        }
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
+        $safras = $usuarioLogado->safras;
+        $categorias = $usuarioLogado->categorias;
 
         return view('lancamentos_financeiros.edit', compact('lancamento', 'safras', 'categorias'));
     }
@@ -97,17 +66,9 @@ class LancamentoFinanceiroController extends Controller
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
-        $lancamento = null;
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $lancamento = LancamentoFinanceiro::findOrFail($id);
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
-        }
-
-        // VALIDAÇÃO ADICIONADA
         $dados = $request->validate([
             'safra_id' => 'required|exists:safras,id',
             'categoria_id' => 'required|exists:categorias,id',
@@ -125,15 +86,8 @@ class LancamentoFinanceiroController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $lancamento = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $lancamento = LancamentoFinanceiro::findOrFail($id);
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
-        }
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $lancamento = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->findOrFail($id);
 
         $lancamento->delete();
 

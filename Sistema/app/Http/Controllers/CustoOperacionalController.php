@@ -14,18 +14,11 @@ class CustoOperacionalController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $custos = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $custos = CustoOperacional::with('safra', 'maquinario', 'maoDeObra')->orderBy('valor', 'desc')->paginate(10);
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $custos = CustoOperacional::whereIn('safra_id', $safraIds)
-                ->with('safra', 'maquinario', 'maoDeObra')
-                ->orderBy('valor', 'desc')
-                ->paginate(10);
-        }
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $custos = CustoOperacional::whereIn('safra_id', $safraIds)
+            ->with('safra', 'maquinario', 'maoDeObra')
+            ->orderBy('valor', 'desc')
+            ->paginate(10);
 
         return view('custos_operacionais.index', compact('custos'));
     }
@@ -33,20 +26,9 @@ class CustoOperacionalController extends Controller
     public function create()
     {
         $usuarioLogado = Auth::user();
-        $safras = null;
-        $maquinarios = null;
-        $maoDeObras = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $safras = Safra::all();
-            $maquinarios = Maquinario::all();
-            $maoDeObras = MaoDeObra::all();
-        }
-        else {
-            $safras = $usuarioLogado->safras;
-            $maquinarios = $usuarioLogado->maquinarios;
-            $maoDeObras = $usuarioLogado->maoDeObras;
-        }
+        $safras = $usuarioLogado->safras;
+        $maquinarios = $usuarioLogado->maquinarios;
+        $maoDeObras = $usuarioLogado->maoDeObras;
 
         return view('custos_operacionais.create', compact('safras', 'maquinarios', 'maoDeObras'));
     }
@@ -64,9 +46,7 @@ class CustoOperacionalController extends Controller
             'mao_de_obra_id' => 'nullable|exists:mao_de_obra,id',
         ]);
 
-        if ($usuarioLogado->can('is-produtor')) {
-            $usuarioLogado->safras()->findOrFail($request->safra_id);
-        }
+        $usuarioLogado->safras()->findOrFail($request->safra_id);
 
         CustoOperacional::create($dados);
 
@@ -76,25 +56,12 @@ class CustoOperacionalController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $custo = null;
-        $safras = null;
-        $maquinarios = null;
-        $maoDeObras = null;
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $custo = CustoOperacional::findOrFail($id);
-            $safras = Safra::all();
-            $maquinarios = Maquinario::all();
-            $maoDeObras = MaoDeObra::all();
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
-
-            $safras = $usuarioLogado->safras;
-            $maquinarios = $usuarioLogado->maquinarios;
-            $maoDeObras = $usuarioLogado->maoDeObras;
-        }
+        $safras = $usuarioLogado->safras;
+        $maquinarios = $usuarioLogado->maquinarios;
+        $maoDeObras = $usuarioLogado->maoDeObras;
 
         return view('custos_operacionais.edit', compact('custo', 'safras', 'maquinarios', 'maoDeObras'));
     }
@@ -102,15 +69,8 @@ class CustoOperacionalController extends Controller
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
-        $custo = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $custo = CustoOperacional::findOrFail($id);
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
-        }
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
 
         $dados = $request->validate([
             'safra_id' => 'required|exists:safras,id',
@@ -129,15 +89,8 @@ class CustoOperacionalController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $custo = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $custo = CustoOperacional::findOrFail($id);
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-            $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
-        }
+        $safraIds = $usuarioLogado->safras->pluck('id');
+        $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
 
         $custo->delete();
 

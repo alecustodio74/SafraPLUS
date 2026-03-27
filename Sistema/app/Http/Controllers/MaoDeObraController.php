@@ -12,35 +12,21 @@ class MaoDeObraController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $maoDeObras = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $maoDeObras = MaoDeObra::with('produtor')->orderBy('custo_diario_hora', 'desc')->paginate(10);
-        }
-        else {
-            $maoDeObras = $usuarioLogado->maoDeObras()->orderBy('custo_diario_hora', 'desc')->paginate(10);
-        }
+        $maoDeObras = $usuarioLogado->maoDeObras()->orderBy('custo_diario_hora', 'desc')->paginate(10);
 
         return view('mao_de_obra.index', compact('maoDeObras'));
     }
 
     public function create()
     {
-        $produtores = null;
-        if (Auth::user()->can('is-admin')) {
-            $produtores = Produtor::all();
-        }
-        return view('mao_de_obra.create', compact('produtores'));
+        return view('mao_de_obra.create');
     }
 
     public function store(Request $request)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-
-        if ($usuarioLogado->can('is-produtor')) {
-            $dados['produtor_id'] = $usuarioLogado->id;
-        }
+        $dados['produtor_id'] = $usuarioLogado->id;
 
         MaoDeObra::create($dados);
 
@@ -50,34 +36,19 @@ class MaoDeObraController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $produtores = null;
-        $maoDeObra = null;
+        $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $maoDeObra = MaoDeObra::findOrFail($id);
-            $produtores = Produtor::all();
-        }
-        else {
-            $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
-        }
-
-        return view('mao_de_obra.edit', compact('maoDeObra', 'produtores'));
+        return view('mao_de_obra.edit', compact('maoDeObra'));
     }
 
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-        $maoDeObra = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $maoDeObra = MaoDeObra::findOrFail($id);
-        }
-        else {
-            $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
-            if (isset($dados['produtor_id'])) {
-                unset($dados['produtor_id']);
-            }
+        $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
+        
+        if (isset($dados['produtor_id'])) {
+            unset($dados['produtor_id']);
         }
 
         $maoDeObra->update($dados);
@@ -88,14 +59,7 @@ class MaoDeObraController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $maoDeObra = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $maoDeObra = MaoDeObra::findOrFail($id);
-        }
-        else {
-            $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
-        }
+        $maoDeObra = $usuarioLogado->maoDeObras()->findOrFail($id);
 
         $maoDeObra->delete();
 

@@ -12,35 +12,21 @@ class InsumoController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $insumos = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $insumos = Insumo::with('produtor')->orderBy('estoque_atual', 'asc')->paginate(10);
-        }
-        else {
-            $insumos = $usuarioLogado->insumos()->orderBy('estoque_atual', 'asc')->paginate(10);
-        }
+        $insumos = $usuarioLogado->insumos()->orderBy('estoque_atual', 'asc')->paginate(10);
 
         return view('insumos.index', compact('insumos'));
     }
 
     public function create()
     {
-        $produtores = null;
-        if (Auth::user()->can('is-admin')) {
-            $produtores = Produtor::all();
-        }
-        return view('insumos.create', compact('produtores'));
+        return view('insumos.create');
     }
 
     public function store(Request $request)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-
-        if ($usuarioLogado->can('is-produtor')) {
-            $dados['produtor_id'] = $usuarioLogado->id;
-        }
+        $dados['produtor_id'] = $usuarioLogado->id;
 
         Insumo::create($dados);
 
@@ -50,34 +36,19 @@ class InsumoController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $produtores = null;
-        $insumo = null;
+        $insumo = $usuarioLogado->insumos()->findOrFail($id);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $insumo = Insumo::findOrFail($id);
-            $produtores = Produtor::all();
-        }
-        else {
-            $insumo = $usuarioLogado->insumos()->findOrFail($id);
-        }
-
-        return view('insumos.edit', compact('insumo', 'produtores'));
+        return view('insumos.edit', compact('insumo'));
     }
 
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-        $insumo = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $insumo = Insumo::findOrFail($id);
-        }
-        else {
-            $insumo = $usuarioLogado->insumos()->findOrFail($id);
-            if (isset($dados['produtor_id'])) {
-                unset($dados['produtor_id']);
-            }
+        $insumo = $usuarioLogado->insumos()->findOrFail($id);
+        
+        if (isset($dados['produtor_id'])) {
+            unset($dados['produtor_id']);
         }
 
         $insumo->update($dados);
@@ -88,14 +59,7 @@ class InsumoController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $insumo = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $insumo = Insumo::findOrFail($id);
-        }
-        else {
-            $insumo = $usuarioLogado->insumos()->findOrFail($id);
-        }
+        $insumo = $usuarioLogado->insumos()->findOrFail($id);
 
         $insumo->delete();
 

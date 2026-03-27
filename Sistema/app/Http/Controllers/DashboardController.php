@@ -19,53 +19,32 @@ class DashboardController extends Controller
         $saldoAtual = 0;
         $safrasRecentes = null;
 
-        if ($usuarioLogado->can('is-admin')) {
-            $receitasTotais = LancamentoFinanceiro::where('tipo_receita_custo', 'receita')->sum('valor_total');
-            $despesasTotais = LancamentoFinanceiro::where('tipo_receita_custo', 'custo')->sum('valor_total');
+        $safraIds = $usuarioLogado->safras->pluck('id');
 
-            $safrasRecentes = Safra::orderBy('data_inicio', 'desc')->take(3)->get();
+        $receitasTotais = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
+            ->where('tipo_receita_custo', 'receita')
+            ->sum('valor_total');
 
-            // Resumo últimos 6 meses (Admin)
-            $seisMesesAtras = Carbon::now()->subMonths(5)->startOfMonth();
-            $lancamentosGrafico = LancamentoFinanceiro::select(
-                DB::raw('DATE_FORMAT(data_lancamento, "%Y-%m") as mes'),
-                'tipo_receita_custo',
-                DB::raw('SUM(valor_total) as total')
-            )
-                ->where('data_lancamento', '>=', $seisMesesAtras)
-                ->groupBy('mes', 'tipo_receita_custo')
-                ->orderBy('mes')
-                ->get();
+        $despesasTotais = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
+            ->where('tipo_receita_custo', 'custo')
+            ->sum('valor_total');
 
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
+        $safrasRecentes = $usuarioLogado->safras()
+            ->orderBy('data_inicio', 'desc')
+            ->take(3)->get();
 
-            $receitasTotais = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-                ->where('tipo_receita_custo', 'receita')
-                ->sum('valor_total');
-
-            $despesasTotais = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-                ->where('tipo_receita_custo', 'custo')
-                ->sum('valor_total');
-
-            $safrasRecentes = $usuarioLogado->safras()
-                ->orderBy('data_inicio', 'desc')
-                ->take(3)->get();
-
-            // Resumo últimos 6 meses (Produtor)
-            $seisMesesAtras = Carbon::now()->subMonths(5)->startOfMonth();
-            $lancamentosGrafico = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-                ->select(
-                DB::raw('DATE_FORMAT(data_lancamento, "%Y-%m") as mes'),
-                'tipo_receita_custo',
-                DB::raw('SUM(valor_total) as total')
-            )
-                ->where('data_lancamento', '>=', $seisMesesAtras)
-                ->groupBy('mes', 'tipo_receita_custo')
-                ->orderBy('mes')
-                ->get();
-        }
+        // Resumo últimos 6 meses (Produtor)
+        $seisMesesAtras = Carbon::now()->subMonths(5)->startOfMonth();
+        $lancamentosGrafico = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
+            ->select(
+            DB::raw('DATE_FORMAT(data_lancamento, "%Y-%m") as mes'),
+            'tipo_receita_custo',
+            DB::raw('SUM(valor_total) as total')
+        )
+            ->where('data_lancamento', '>=', $seisMesesAtras)
+            ->groupBy('mes', 'tipo_receita_custo')
+            ->orderBy('mes')
+            ->get();
 
         $saldoAtual = $receitasTotais - $despesasTotais;
 

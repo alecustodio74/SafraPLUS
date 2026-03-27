@@ -13,14 +13,7 @@ class RelatorioController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $safraIds = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $safraIds = Safra::pluck('id');
-        }
-        else {
-            $safraIds = $usuarioLogado->safras->pluck('id');
-        }
+        $safraIds = $usuarioLogado->safras->pluck('id');
 
         $relatorioLucroPorSafra = Safra::whereIn('id', $safraIds)
             ->withSum(['lancamentosFinanceiros as receitas' => fn($q) => $q->where('tipo_receita_custo', 'receita')], 'valor_total')

@@ -12,8 +12,6 @@ use App\Http\Controllers\MaquinarioController;
 use App\Http\Controllers\MaoDeObraController;
 use App\Http\Controllers\CustoOperacionalController;
 use App\Http\Controllers\MovimentacaoEstoqueController;
-use App\Http\Controllers\ProdutorController;
-use App\Http\Controllers\AdministradorController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,14 +30,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/password', [ProfileController::class, 'editPassword'])->name('profile.edit_password');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.update_password');
 
-    Route::resource('produtores', ProdutorController::class)
-        ->parameters(['produtores' => 'produtor'])
-        ->middleware('can:is-admin');
-
-    Route::resource('administradores', AdministradorController::class)
-        ->parameters(['administradores' => 'administrador'])
-        ->except(['show'])
-        ->middleware('can:is-admin');
 
     Route::resource('safras', SafraController::class);
     Route::resource('categorias', CategoriaController::class);

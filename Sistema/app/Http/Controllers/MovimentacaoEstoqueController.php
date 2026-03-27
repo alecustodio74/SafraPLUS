@@ -14,18 +14,11 @@ class MovimentacaoEstoqueController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $movimentacoes = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $movimentacoes = MovimentacaoEstoque::with('insumo', 'safra')->orderBy('quantidade', 'asc')->paginate(10);
-        }
-        else {
-            $insumoIds = $usuarioLogado->insumos->pluck('id');
-            $movimentacoes = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)
-                ->with('insumo', 'safra')
-                ->orderBy('quantidade', 'asc')
-                ->paginate(10);
-        }
+        $insumoIds = $usuarioLogado->insumos->pluck('id');
+        $movimentacoes = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)
+            ->with('insumo', 'safra')
+            ->orderBy('quantidade', 'asc')
+            ->paginate(10);
 
         return view('movimentacoes_estoque.index', compact('movimentacoes'));
     }
@@ -33,17 +26,8 @@ class MovimentacaoEstoqueController extends Controller
     public function create()
     {
         $usuarioLogado = Auth::user();
-        $insumos = null;
-        $safras = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $insumos = Insumo::all();
-            $safras = Safra::all();
-        }
-        else {
-            $insumos = $usuarioLogado->insumos;
-            $safras = $usuarioLogado->safras;
-        }
+        $insumos = $usuarioLogado->insumos;
+        $safras = $usuarioLogado->safras;
 
         return view('movimentacoes_estoque.create', compact('insumos', 'safras'));
     }
@@ -61,15 +45,10 @@ class MovimentacaoEstoqueController extends Controller
             'data_movimentacao' => 'required|date',
         ]);
 
-        $insumo = Insumo::findOrFail($dados['insumo_id']);
+        $insumo = $usuarioLogado->insumos()->findOrFail($dados['insumo_id']);
 
-        if ($usuarioLogado->can('is-produtor')) {
-            if ($insumo->produtor_id != $usuarioLogado->id) {
-                abort(403, 'Este insumo não pertence a você.');
-            }
-            if ($request->filled('safra_id')) {
-                $usuarioLogado->safras()->findOrFail($request->safra_id);
-            }
+        if ($request->filled('safra_id')) {
+            $usuarioLogado->safras()->findOrFail($request->safra_id);
         }
 
         if ($dados['tipo_movimentacao'] == 'entrada') {
@@ -91,21 +70,10 @@ class MovimentacaoEstoqueController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $movimentacao = null;
-        $insumos = null;
-        $safras = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $movimentacao = MovimentacaoEstoque::findOrFail($id);
-            $insumos = Insumo::all();
-            $safras = Safra::all();
-        }
-        else {
-            $insumoIds = $usuarioLogado->insumos->pluck('id');
-            $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
-            $insumos = $usuarioLogado->insumos;
-            $safras = $usuarioLogado->safras;
-        }
+        $insumoIds = $usuarioLogado->insumos->pluck('id');
+        $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
+        $insumos = $usuarioLogado->insumos;
+        $safras = $usuarioLogado->safras;
 
         return view('movimentacoes_estoque.edit', compact('movimentacao', 'insumos', 'safras'));
     }
@@ -113,15 +81,8 @@ class MovimentacaoEstoqueController extends Controller
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
-        $movimentacao = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $movimentacao = MovimentacaoEstoque::findOrFail($id);
-        }
-        else {
-            $insumoIds = $usuarioLogado->insumos->pluck('id');
-            $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
-        }
+        $insumoIds = $usuarioLogado->insumos->pluck('id');
+        $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
 
         $dados = $request->validate([
             'tipo_movimentacao' => 'required|in:entrada,saida',
@@ -140,15 +101,8 @@ class MovimentacaoEstoqueController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $movimentacao = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $movimentacao = MovimentacaoEstoque::findOrFail($id);
-        }
-        else {
-            $insumoIds = $usuarioLogado->insumos->pluck('id');
-            $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
-        }
+        $insumoIds = $usuarioLogado->insumos->pluck('id');
+        $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
 
         $insumo = $movimentacao->insumo;
         if ($movimentacao->tipo_movimentacao == 'entrada') {

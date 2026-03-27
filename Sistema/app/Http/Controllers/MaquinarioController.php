@@ -12,35 +12,21 @@ class MaquinarioController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $maquinarios = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $maquinarios = Maquinario::with('produtor')->orderBy('custo_hora', 'desc')->paginate(10);
-        }
-        else {
-            $maquinarios = $usuarioLogado->maquinarios()->orderBy('custo_hora', 'desc')->paginate(10);
-        }
+        $maquinarios = $usuarioLogado->maquinarios()->orderBy('custo_hora', 'desc')->paginate(10);
 
         return view('maquinarios.index', compact('maquinarios'));
     }
 
     public function create()
     {
-        $produtores = null;
-        if (Auth::user()->can('is-admin')) {
-            $produtores = Produtor::all();
-        }
-        return view('maquinarios.create', compact('produtores'));
+        return view('maquinarios.create');
     }
 
     public function store(Request $request)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-
-        if ($usuarioLogado->can('is-produtor')) {
-            $dados['produtor_id'] = $usuarioLogado->id;
-        }
+        $dados['produtor_id'] = $usuarioLogado->id;
 
         Maquinario::create($dados);
 
@@ -50,34 +36,19 @@ class MaquinarioController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $produtores = null;
-        $maquinario = null;
+        $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $maquinario = Maquinario::findOrFail($id);
-            $produtores = Produtor::all();
-        }
-        else {
-            $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
-        }
-
-        return view('maquinarios.edit', compact('maquinario', 'produtores'));
+        return view('maquinarios.edit', compact('maquinario'));
     }
 
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-        $maquinario = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $maquinario = Maquinario::findOrFail($id);
-        }
-        else {
-            $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
-            if (isset($dados['produtor_id'])) {
-                unset($dados['produtor_id']);
-            }
+        $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
+        
+        if (isset($dados['produtor_id'])) {
+            unset($dados['produtor_id']);
         }
 
         $maquinario->update($dados);
@@ -88,14 +59,7 @@ class MaquinarioController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $maquinario = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $maquinario = Maquinario::findOrFail($id);
-        }
-        else {
-            $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
-        }
+        $maquinario = $usuarioLogado->maquinarios()->findOrFail($id);
 
         $maquinario->delete();
 

@@ -12,35 +12,21 @@ class CategoriaController extends Controller
     public function index()
     {
         $usuarioLogado = Auth::user();
-        $categorias = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $categorias = Categoria::with('produtor')->orderBy('nome', 'asc')->paginate(10);
-        }
-        else {
-            $categorias = $usuarioLogado->categorias()->orderBy('nome', 'asc')->paginate(10);
-        }
+        $categorias = $usuarioLogado->categorias()->orderBy('nome', 'asc')->paginate(10);
 
         return view('categorias.index', compact('categorias'));
     }
 
     public function create()
     {
-        $produtores = null;
-        if (Auth::user()->can('is-admin')) {
-            $produtores = Produtor::all();
-        }
-        return view('categorias.create', compact('produtores'));
+        return view('categorias.create');
     }
 
     public function store(Request $request)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-
-        if ($usuarioLogado->can('is-produtor')) {
-            $dados['produtor_id'] = $usuarioLogado->id;
-        }
+        $dados['produtor_id'] = $usuarioLogado->id;
 
         Categoria::create($dados);
 
@@ -50,34 +36,19 @@ class CategoriaController extends Controller
     public function edit($id)
     {
         $usuarioLogado = Auth::user();
-        $produtores = null;
-        $categoria = null;
+        $categoria = $usuarioLogado->categorias()->findOrFail($id);
 
-        if ($usuarioLogado->can('is-admin')) {
-            $categoria = Categoria::findOrFail($id);
-            $produtores = Produtor::all();
-        }
-        else {
-            $categoria = $usuarioLogado->categorias()->findOrFail($id);
-        }
-
-        return view('categorias.edit', compact('categoria', 'produtores'));
+        return view('categorias.edit', compact('categoria'));
     }
 
     public function update(Request $request, $id)
     {
         $usuarioLogado = Auth::user();
         $dados = $request->all();
-        $categoria = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $categoria = Categoria::findOrFail($id);
-        }
-        else {
-            $categoria = $usuarioLogado->categorias()->findOrFail($id);
-            if (isset($dados['produtor_id'])) {
-                unset($dados['produtor_id']);
-            }
+        $categoria = $usuarioLogado->categorias()->findOrFail($id);
+        
+        if (isset($dados['produtor_id'])) {
+            unset($dados['produtor_id']);
         }
 
         $categoria->update($dados);
@@ -88,14 +59,7 @@ class CategoriaController extends Controller
     public function destroy($id)
     {
         $usuarioLogado = Auth::user();
-        $categoria = null;
-
-        if ($usuarioLogado->can('is-admin')) {
-            $categoria = Categoria::findOrFail($id);
-        }
-        else {
-            $categoria = $usuarioLogado->categorias()->findOrFail($id);
-        }
+        $categoria = $usuarioLogado->categorias()->findOrFail($id);
 
         $categoria->delete();
 

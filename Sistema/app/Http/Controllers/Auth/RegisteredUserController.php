@@ -47,7 +47,6 @@ class RegisteredUserController extends Controller
             'propriedade' => $request->propriedade,
             'cultura_principal' => $request->cultura_principal,
             'password' => $request->password,
-            'role' => 'produtor',
         ]);
 
         event(new Registered($user));
