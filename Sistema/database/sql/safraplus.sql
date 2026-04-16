@@ -17,7 +17,6 @@ CREATE TABLE `produtores` (
   `telefone` varchar(20) DEFAULT NULL,
   `password` varchar(255) NOT NULL,
   `remember_token` varchar(100) DEFAULT NULL,
-  `role` varchar(255) NOT NULL DEFAULT 'produtor',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),

@@ -11,7 +11,7 @@ class ProdutorController extends Controller
 {
     public function index()
     {
-        $produtores = Produtor::where('role', 'produtor')->orderBy('nome', 'asc')->paginate(10);
+        $produtores = Produtor::orderBy('nome', 'asc')->paginate(10);
         return view('produtores.index', compact('produtores'));
     }
 
@@ -40,7 +40,6 @@ class ProdutorController extends Controller
             'propriedade' => $request->propriedade,
             'cultura_principal' => $request->cultura_principal,
             'telefone' => $request->telefone,
-            'role' => 'produtor',
         ]);
 
         return redirect()->route('produtores.index')->with('success', 'Produtor criado com sucesso!');
@@ -62,7 +61,7 @@ class ProdutorController extends Controller
             'telefone' => ['nullable', 'string', 'max:20'],
         ]);
 
-        $dados = $request->except(['_token', '_method', 'password', 'role']);
+        $dados = $request->except(['_token', '_method', 'password']);
 
         if ($request->filled('password')) {
             $dados['password'] = $request->password;
