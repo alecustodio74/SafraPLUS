@@ -32,8 +32,8 @@
                 </div>
                 <h3 class="text-xl font-bold text-gray-900">{{ Auth::user()->nome }}</h3>
                 <p class="text-slate-500 text-sm mb-4">{{ Auth::user()->email }}</p>
-                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider {{ Auth::user()->role == 'admin' ? 'bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100' }}">
-                    {{ Auth::user()->role == 'admin' ? 'Administrador' : 'Produtor' }}
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    Produtor
                 </span>
             </div>
             <div class="mt-6 pt-6 border-t border-gray-50 space-y-4 text-sm">

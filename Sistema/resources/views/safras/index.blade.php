@@ -41,6 +41,7 @@
                     <th class="px-6 py-4">Produtor</th>
                     @endcan
                     <th class="px-6 py-4">Área (ha)</th>
+                    <th class="px-6 py-4">Propriedade</th>
                     <th class="px-6 py-4">Localização</th>
                     <th class="px-6 py-4">Período</th>
                     <th class="px-6 py-4 text-right sticky right-0 bg-gray-50 z-10 shadow-[-12px_0_15px_-3px_rgba(0,0,0,0.05)]">Ações</th>
@@ -71,8 +72,18 @@
                             {{ number_format($safra->area_plantada, 2, ',', '.') }} ha
                         </span>
                     </td>
+                    <td class="px-6 py-4 font-medium text-gray-900">
+                         {{ $safra->propriedade ?: 'N/A' }}
+                    </td>
                     <td class="px-6 py-4 text-gray-600">
-                         {{ $safra->localizacao }}
+                        @if($safra->localizacao)
+                            <a href="#" onclick="abrirMapaPlantio(event, '{{ $safra->localizacao }}')" class="text-emerald-600 hover:text-emerald-700 flex items-center gap-1 font-medium transition-colors" title="Ver no mapa">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                Ver Mapa
+                            </a>
+                        @else
+                            -
+                        @endif
                     </td>
                     <td class="px-6 py-4 text-gray-600">
                         <div class="flex flex-col">
@@ -99,7 +110,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="@can('is-admin') 6 @else 5 @endcan" class="px-6 py-12 text-center">
+                    <td colspan="@can('is-admin') 7 @else 6 @endcan" class="px-6 py-12 text-center">
                         <div class="flex flex-col items-center justify-center text-gray-500">
                             <svg class="w-12 h-12 text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
                             <span class="text-sm font-medium">Nenhuma safra cadastrada.</span>
@@ -130,10 +141,23 @@
 
                 <div class="mb-2 pr-16">
                     <h4 class="font-bold text-gray-900 text-lg leading-tight">{{ $safra->cultura }}</h4>
-                    <p class="text-xs text-gray-500 mt-0.5 flex items-center gap-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                        {{ $safra->localizacao }}
+                    <p class="text-xs text-gray-800 font-semibold mt-1 flex items-center gap-1">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                        {{ $safra->propriedade ?: 'Sem Propriedade' }}
                     </p>
+                    <div class="mt-0.5">
+                        @if($safra->localizacao)
+                            <a href="#" onclick="abrirMapaPlantio(event, '{{ $safra->localizacao }}')" class="text-xs text-emerald-600 hover:text-emerald-700 flex items-center gap-1 font-medium transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                Ver no Mapa
+                            </a>
+                        @else
+                            <p class="text-xs text-gray-500 flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                -
+                            </p>
+                        @endif
+                    </div>
                 </div>
 
                 <div class="flex items-center gap-3 mb-3">
@@ -182,5 +206,41 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de Mapa de Plantio -->
+<div id="modalMapaPlantio" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.9); z-index: 999999;">
+    <!-- Botão Fechar -->
+    <button type="button" onclick="fecharMapaPlantio()" style="position: absolute; top: 20px; right: 20px; z-index: 1000000; background: rgba(255, 255, 255, 0.2); color: #fff; border: 2px solid #fff; border-radius: 50%; width: 50px; height: 50px; font-size: 24px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.3s;" class="hover:bg-white/30 focus:outline-none focus:bg-white/30">
+        X
+    </button>
+    <!-- Iframe Google Maps -->
+    <iframe 
+        id="iframeGoogleMaps"
+        src="" 
+        style="width: 100%; height: 100%; border: none;" 
+        allowfullscreen="" 
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+</div>
+
+<script>
+    function abrirMapaPlantio(evento, coordenadas) {
+        evento.preventDefault();
+        
+        // Limpar possíveis espaços e montar a URL do iframe
+        const urlMap = "https://maps.google.com/maps?q=" + coordenadas.trim() + "&t=k&z=16&output=embed";
+        document.getElementById('iframeGoogleMaps').src = urlMap;
+        
+        document.getElementById('modalMapaPlantio').style.display = 'block';
+        document.body.style.overflow = 'hidden'; 
+    }
+
+    function fecharMapaPlantio() {
+        document.getElementById('modalMapaPlantio').style.display = 'none';
+        document.getElementById('iframeGoogleMaps').src = ""; // Limpa para economizar recurso
+        document.body.style.overflow = 'auto'; 
+    }
+</script>
 
 @endsection

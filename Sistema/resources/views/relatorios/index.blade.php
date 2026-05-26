@@ -4,19 +4,52 @@
 
 @section('content')
 
-<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-4">
     <p class="text-sm text-gray-500 font-medium">Visualize o desempenho financeiro e operacional consolidado de suas safras.</p>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden flex flex-col min-w-[200px]">
         <div class="w-full h-1 bg-indigo-600"></div>
         <div class="p-3">
-            <h3 class="text-gray-400 font-extrabold text-[10px] uppercase tracking-widest mb-0.5">Investimento Médio</h3>
+            <h3 class="text-gray-400 font-extrabold text-xs uppercase tracking-widest mb-0.5">Investimento Médio</h3>
             <div class="flex items-baseline gap-1">
-                <span class="text-lg font-black text-gray-900 tracking-tight">R$ {{ number_format($custoPorHectare, 2, ',', '.') }}</span>
-                <span class="text-gray-400 font-bold text-[10px]">/ ha</span>
+                <span class="text-xl font-black text-gray-900 tracking-tight">R$ {{ number_format($custoPorHectare, 2, ',', '.') }}</span>
+                <span class="text-gray-400 font-bold text-xs">/ ha</span>
             </div>
         </div>
     </div>
+</div>
+
+<!-- Filtros do Relatório -->
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
+    <form method="GET" action="{{ route('relatorios.index') }}" class="flex flex-col md:flex-row gap-4 items-end">
+        <div class="flex-[2] min-w-[220px] w-full">
+            <label for="safra_id" class="block text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Filtrar por Safra</label>
+            <select name="safra_id" id="safra_id" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-2.5 text-sm transition-colors outline-none" onchange="this.form.submit()">
+                <option value="">Todas as Safras</option>
+                @foreach($safrasList as $safra)
+                    <option value="{{ $safra->id }}" {{ $filtroSafra == $safra->id ? 'selected' : '' }}>
+                        {{ $safra->cultura }} ({{ \Carbon\Carbon::parse($safra->data_inicio)->format('Y') }})
+                    </option>
+                @endforeach
+            </select>
+        </div>
+        
+        <div class="flex-1 w-full">
+            <label for="data_inicio" class="block text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Data Inicial</label>
+            <input type="date" name="data_inicio" id="data_inicio" value="{{ $dataInicio }}" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-2.5 text-sm transition-colors outline-none" onchange="this.form.submit()">
+        </div>
+
+        <div class="flex-1 w-full">
+            <label for="data_fim" class="block text-sm font-bold text-gray-500 uppercase tracking-widest mb-2">Data Final</label>
+            <input type="date" name="data_fim" id="data_fim" value="{{ $dataFim }}" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-2.5 text-sm transition-colors outline-none" onchange="this.form.submit()">
+        </div>
+
+        <div class="flex items-center gap-2 w-full md:w-auto">
+            <a href="{{ route('relatorios.index') }}" class="w-full md:w-auto px-6 py-2.5 bg-white border border-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-colors shadow-sm text-sm text-center">
+                Limpar
+            </a>
+        </div>
+    </form>
 </div>
 
 <!-- Lucratividade e Fluxo de Caixa -->
@@ -25,7 +58,7 @@
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden flex flex-col">
         <div class="w-full h-1.5 bg-emerald-500"></div>
         <div class="px-6 pt-6 pb-4 border-b border-gray-50 bg-gray-50/50">
-            <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
+            <h3 class="text-sm font-black text-gray-500 uppercase tracking-widest flex items-center gap-2">
                 <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                 Lucratividade por Safra
             </h3>
@@ -35,7 +68,7 @@
         <div class="overflow-x-auto overflow-y-auto w-full max-h-[300px]">
             <table class="w-full text-left border-collapse">
                 <thead class="sticky top-0 bg-white shadow-sm z-10">
-                    <tr class="bg-white border-b border-gray-100 text-[10px] uppercase tracking-tighter text-gray-400 font-black">
+                    <tr class="bg-white border-b border-gray-100 text-xs uppercase tracking-tighter text-gray-400 font-black">
                         <th class="px-6 py-4">Safra</th>
                         <th class="px-6 py-4 text-right">Resultado</th>
                     </tr>
@@ -44,15 +77,15 @@
                     @forelse ($relatorioLucroPorSafra as $safra)
                     <tr class="hover:bg-gray-50/50 transition-colors group">
                         <td class="px-6 py-4">
-                            <span class="text-gray-900 font-extrabold block text-sm">{{ $safra->cultura }}</span>
-                            <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{{ \Carbon\Carbon::parse($safra->data_inicio)->format('d/m/y') }} @if($safra->data_fim) - {{ \Carbon\Carbon::parse($safra->data_fim)->format('d/m/y') }} @endif</span>
+                            <span class="text-gray-900 font-extrabold block text-base">{{ $safra->cultura }}</span>
+                            <span class="text-xs text-gray-400 font-bold uppercase tracking-wider">{{ \Carbon\Carbon::parse($safra->data_inicio)->format('d/m/y') }} @if($safra->data_fim) - {{ \Carbon\Carbon::parse($safra->data_fim)->format('d/m/y') }} @endif</span>
                         </td>
                         <td class="px-6 py-4 text-right">
                             <div class="flex flex-col items-end">
-                                <span class="text-[15px] font-black {{ ($safra->lucro ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
+                                <span class="text-lg font-black {{ ($safra->lucro ?? 0) >= 0 ? 'text-emerald-600' : 'text-rose-600' }}">
                                     R$ {{ number_format($safra->lucro ?? 0, 2, ',', '.') }}
                                 </span>
-                                <span class="text-[10px] text-gray-500 font-semibold mt-0.5">Entradas: R$ {{ number_format($safra->receitas ?? 0, 2, ',', '.') }}</span>
+                                <span class="text-xs text-gray-500 font-semibold mt-0.5">Entradas: R$ {{ number_format($safra->receitas ?? 0, 2, ',', '.') }}</span>
                             </div>
                         </td>
                     </tr>
@@ -70,7 +103,7 @@
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden flex flex-col">
         <div class="w-full h-1.5 bg-indigo-500"></div>
         <div class="px-6 pt-6 pb-3 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-            <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest">Fluxo de Caixa Mensal</h3>
+            <h3 class="text-sm font-black text-gray-500 uppercase tracking-widest">Fluxo de Caixa Mensal</h3>
         </div>
         <div class="px-6 pb-6 pt-0 min-h-[320px] flex items-center justify-center">
             @if($fluxoLabels->isEmpty())
@@ -88,11 +121,13 @@
     <div class="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden flex flex-col">
         <div class="w-full h-1 bg-amber-500"></div>
         <div class="px-6 pt-6 pb-4 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-            <h3 class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Estrutura de Gastos</h3>
+            <h3 class="text-xs font-black text-gray-500 uppercase tracking-widest">
+                Estrutura de Gastos {{ $filtroSafra ? '- ' . $safrasList->firstWhere('id', $filtroSafra)->cultura : '' }}
+            </h3>
             @if(isset($custosData) && collect($custosData)->sum() > 0)
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Total:</span>
-                    <span class="text-lg font-black text-rose-500 bg-rose-50 px-4 py-1.5 rounded-lg shadow-sm border border-rose-100">
+                    <span class="text-sm font-bold text-gray-400 uppercase tracking-widest">Total:</span>
+                    <span class="text-xl font-black text-rose-500 bg-rose-50 px-4 py-1.5 rounded-lg shadow-sm border border-rose-100">
                         R$ {{ number_format(collect($custosData)->sum(), 2, ',', '.') }}
                     </span>
                 </div>
@@ -150,6 +185,11 @@
                     indexAxis: 'y',
                     responsive: true, 
                     maintainAspectRatio: false,
+                    layout: {
+                        padding: {
+                            right: 120
+                        }
+                    },
                     plugins: { 
                         legend: { 
                             display: false 
@@ -160,7 +200,7 @@
                                     anchor: 'end',
                                     align: 'right',
                                     color: '#6b7280', // gray-500
-                                    font: { weight: '800', size: 12, family: "'Inter', sans-serif" },
+                                    font: { weight: '800', size: 14, family: "'Inter', sans-serif" },
                                     formatter: (value) => {
                                         return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(parseFloat(value));
                                     },
@@ -171,7 +211,7 @@
                                     anchor: 'end',
                                     align: 'right',
                                     color: '#f43f5e', // rose-500
-                                    font: { weight: '800', size: 12, family: "'Inter', sans-serif" },
+                                    font: { weight: '800', size: 14, family: "'Inter', sans-serif" },
                                     formatter: (value, context) => {
                                         const sum = context.chart.data.datasets[0].data.reduce((a, b) => parseFloat(a) + parseFloat(b), 0);
                                         return sum === 0 ? '(0%)' : '(' + (parseFloat(value) * 100 / sum).toFixed(1) + '%)';
@@ -180,7 +220,7 @@
                                         // Calculate exact pixel width of the currency text to perfectly position the percentage right after it
                                         const val = parseFloat(context.dataset.data[context.dataIndex]);
                                         const text = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-                                        context.chart.ctx.font = "800 12px 'Inter', sans-serif";
+                                        context.chart.ctx.font = "800 14px 'Inter', sans-serif";
                                         const textWidth = context.chart.ctx.measureText(text).width;
                                         // currency offset(4) + currency left padding(4) + textWidth + gap(4)
                                         return 4 + 4 + textWidth + 4;
@@ -211,7 +251,7 @@
                         y: {
                             grid: { display: false, drawBorder: false },
                             ticks: {
-                                font: { family: "'Inter', sans-serif", size: 12, weight: '500' },
+                                font: { family: "'Inter', sans-serif", size: 14, weight: '500' },
                                 color: '#4b5563'
                             }
                         }
@@ -307,7 +347,7 @@
                                 drawBorder: false,
                             },
                             ticks: {
-                                font: { family: "'Inter', sans-serif", size: 11 },
+                                font: { family: "'Inter', sans-serif", size: 13 },
                                 color: '#6b7280'
                             }
                         },
@@ -317,7 +357,7 @@
                                 drawBorder: false,
                             },
                             ticks: {
-                                font: { family: "'Inter', sans-serif", size: 11 },
+                                font: { family: "'Inter', sans-serif", size: 13 },
                                 color: '#6b7280'
                             }
                         }

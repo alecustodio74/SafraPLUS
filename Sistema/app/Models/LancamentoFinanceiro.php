@@ -17,6 +17,11 @@ class LancamentoFinanceiro extends Model
         'descricao',
         'valor_total',
         'data_lancamento',
+        'quantidade',
+        'preco_unitario',
+        'comprador',
+        'desconto_taxa',
+        'valor_liquido',
     ];
 
     public function safra()

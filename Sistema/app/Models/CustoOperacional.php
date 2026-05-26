@@ -13,10 +13,13 @@ class CustoOperacional extends Model
 
     protected $fillable = [
         'safra_id',
+        'categoria',
         'maquinario_id',
         'mao_de_obra_id',
         'data',
         'descricao',
+        'quantidade',
+        'preco_unitario',
         'valor',
     ];
 

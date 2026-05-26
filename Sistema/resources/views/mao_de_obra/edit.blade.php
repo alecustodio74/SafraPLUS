@@ -35,7 +35,7 @@
             </div>
 
             <div class="mb-6">
-                <label for="custo_diario_hora" class="block text-sm font-medium text-gray-700 mb-2">Custo (Diário/Hora)</label>
+                <label for="custo_diario_hora" class="block text-sm font-medium text-gray-700 mb-2">Custo (Diário)</label>
                 <input type="number" step="0.01" name="custo_diario_hora" id="custo_diario_hora" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-indigo-500 focus:border-indigo-500 px-4 py-3 transition-colors outline-none" value="{{ $maoDeObra->custo_diario_hora }}" placeholder="Ex: 150,00">
             </div>
 

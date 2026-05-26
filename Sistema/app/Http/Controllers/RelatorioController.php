@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\DB;
 
 class RelatorioController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $usuarioLogado = Auth::user();
-        $safraIds = $usuarioLogado->safras->pluck('id');
+        
+        $filtroSafra = $request->input('safra_id');
+        $dataInicio = $request->input('data_inicio');
+        $dataFim = $request->input('data_fim');
+
+        if ($filtroSafra) {
+            $safraIds = $usuarioLogado->safras()->where('id', $filtroSafra)->pluck('id');
+        } else {
+            $safraIds = $usuarioLogado->safras->pluck('id');
+        }
 
         $relatorioLucroPorSafra = Safra::whereIn('id', $safraIds)
             ->withSum(['lancamentosFinanceiros as receitas' => fn($q) => $q->where('tipo_receita_custo', 'receita')], 'valor_total')
@@ -22,43 +31,57 @@ class RelatorioController extends Controller
             ->orderBy('data_inicio', 'desc')
             ->get()
             ->map(function ($safra) {
-            $safra->despesas = ($safra->despesas_financeiras ?? 0) + ($safra->despesas_operacionais ?? 0);
+            $despesas_insumos = \App\Models\MovimentacaoEstoque::where('safra_id', $safra->id)->where('tipo_movimentacao', 'saida')->select(DB::raw('SUM(quantidade * valor_unitario) as total'))->value('total');
+            $safra->despesas_insumos = $despesas_insumos ?? 0;
+            $safra->despesas = ($safra->despesas_financeiras ?? 0) + ($safra->despesas_operacionais ?? 0) + $safra->despesas_insumos;
             $safra->lucro = ($safra->receitas ?? 0) - $safra->despesas;
             return $safra;
         });
 
-        $relatorioDistribuicaoCustos = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-            ->whereIn('tipo_receita_custo', ['custo', 'despesa'])
-            ->leftJoin('categorias', 'lancamentos_financeiros.categoria_id', '=', 'categorias.id')
+        $queryDistribuicao = LancamentoFinanceiro::whereIn('safra_id', $safraIds)->whereIn('tipo_receita_custo', ['custo', 'despesa']);
+        if ($dataInicio) $queryDistribuicao->where('data_lancamento', '>=', $dataInicio);
+        if ($dataFim) $queryDistribuicao->where('data_lancamento', '<=', $dataFim);
+        
+        $relatorioDistribuicaoCustos = $queryDistribuicao->leftJoin('categorias', 'lancamentos_financeiros.categoria_id', '=', 'categorias.id')
             ->select(DB::raw('COALESCE(categorias.nome, "Outros Custos Financeiros") as nome_categoria'), DB::raw('SUM(lancamentos_financeiros.valor_total) as total_custo'))
             ->groupBy('nome_categoria')
             ->get();
-
-        $custosOperacionaisMaquinario = \App\Models\CustoOperacional::whereIn('safra_id', $safraIds)
-            ->whereNotNull('maquinario_id')
-            ->sum('valor');
-
-        $custosOperacionaisMaoDeObra = \App\Models\CustoOperacional::whereIn('safra_id', $safraIds)
-            ->whereNotNull('mao_de_obra_id')
-            ->sum('valor');
-
-        $custosOperacionaisOutros = \App\Models\CustoOperacional::whereIn('safra_id', $safraIds)
-            ->whereNull('maquinario_id')
-            ->whereNull('mao_de_obra_id')
-            ->sum('valor');
 
         $dadosFinaisCustos = $relatorioDistribuicaoCustos->mapWithKeys(function ($item) {
             return [$item->nome_categoria => $item->total_custo];
         })->toArray();
 
-        if ($custosOperacionaisMaquinario > 0) {
-            $dadosFinaisCustos['Maquinário'] = ($dadosFinaisCustos['Maquinário'] ?? 0) + $custosOperacionaisMaquinario;
+        $queryCustosOp = \App\Models\CustoOperacional::with(['maquinario', 'maoDeObra'])
+            ->whereIn('safra_id', $safraIds);
+        if ($dataInicio) $queryCustosOp->where('data', '>=', $dataInicio);
+        if ($dataFim) $queryCustosOp->where('data', '<=', $dataFim);
+
+        $custosOperacionais = $queryCustosOp->get();
+
+        foreach ($custosOperacionais as $custo) {
+            $vinculos = [];
+            if ($custo->maquinario_id && $custo->maquinario) {
+                $vinculos[] = $custo->maquinario->nome_modelo;
+            }
+            if ($custo->mao_de_obra_id && $custo->maoDeObra) {
+                $vinculos[] = $custo->maoDeObra->nome_ou_tipo;
+            }
+            
+            $label = $custo->descricao ?: 'Custo Operacional';
+            if (count($vinculos) > 0) {
+                $label .= ' (' . implode(' + ', $vinculos) . ')';
+            }
+
+            $dadosFinaisCustos[$label] = ($dadosFinaisCustos[$label] ?? 0) + $custo->valor;
         }
-        if ($custosOperacionaisMaoDeObra > 0) {
-            $dadosFinaisCustos['Mão de Obra'] = ($dadosFinaisCustos['Mão de Obra'] ?? 0) + $custosOperacionaisMaoDeObra;
-        }
-        if ($custosOperacionaisOutros > 0) {
-            $dadosFinaisCustos['Outros Custos de Operação'] = ($dadosFinaisCustos['Outros Custos de Operação'] ?? 0) + $custosOperacionaisOutros;
+
+        $queryInsumos = \App\Models\MovimentacaoEstoque::whereIn('safra_id', $safraIds)->where('tipo_movimentacao', 'saida');
+        if ($dataInicio) $queryInsumos->where('data_movimentacao', '>=', $dataInicio);
+        if ($dataFim) $queryInsumos->where('data_movimentacao', '<=', $dataFim);
+        $custoInsumos = $queryInsumos->select(DB::raw('SUM(quantidade * valor_unitario) as total'))->value('total');
+
+        if ($custoInsumos > 0) {
+            $dadosFinaisCustos['Insumos'] = ($dadosFinaisCustos['Insumos'] ?? 0) + $custoInsumos;
         }
 
         // Ordenar os dados consolidados
@@ -72,8 +95,11 @@ class RelatorioController extends Controller
 
         $custoPorHectare = ($totalArea > 0) ? ($totalCustos / $totalArea) : 0;
 
-        $fluxoCaixa = LancamentoFinanceiro::whereIn('safra_id', $safraIds)
-            ->select(
+        $queryFluxo = LancamentoFinanceiro::whereIn('safra_id', $safraIds);
+        if ($dataInicio) $queryFluxo->where('data_lancamento', '>=', $dataInicio);
+        if ($dataFim) $queryFluxo->where('data_lancamento', '<=', $dataFim);
+
+        $fluxoCaixa = $queryFluxo->select(
             DB::raw('DATE_FORMAT(data_lancamento, "%Y-%m") as mes'),
             DB::raw('SUM(CASE WHEN tipo_receita_custo = "receita" THEN valor_total ELSE 0 END) as total_receitas'),
             DB::raw('SUM(CASE WHEN tipo_receita_custo IN ("custo", "despesa") THEN valor_total ELSE 0 END) as total_despesas')
@@ -84,15 +110,17 @@ class RelatorioController extends Controller
             ->toArray();
 
         // Buscar fluxos de custos operacionais
-        $fluxoCustosOperacionais = \App\Models\CustoOperacional::whereIn('safra_id', $safraIds)
-            ->select(
+        $queryFluxoOp = \App\Models\CustoOperacional::whereIn('safra_id', $safraIds);
+        if ($dataInicio) $queryFluxoOp->where('data', '>=', $dataInicio);
+        if ($dataFim) $queryFluxoOp->where('data', '<=', $dataFim);
+
+        $fluxoCustosOperacionais = $queryFluxoOp->select(
             DB::raw('DATE_FORMAT(data, "%Y-%m") as mes'),
             DB::raw('SUM(valor) as total_despesas_operacionais')
         )
             ->groupBy('mes')
             ->get();
 
-        // Mesclar os custos operacionais no fluxo de caixa geral
         foreach ($fluxoCustosOperacionais as $custoOp) {
             $mes = $custoOp->mes;
             if (!isset($fluxoCaixa[$mes])) {
@@ -105,7 +133,37 @@ class RelatorioController extends Controller
             $fluxoCaixa[$mes]['total_despesas'] += $custoOp->total_despesas_operacionais;
         }
 
-        // Ordenar as chaves (meses) em ordem ascendente
+        if ($filtroSafra) {
+            // Buscar fluxos de usos de insumos para a safra específica
+            $queryFluxoIns = \App\Models\MovimentacaoEstoque::whereIn('safra_id', $safraIds)->where('tipo_movimentacao', 'saida');
+        } else {
+            // Buscar compras globais de insumos
+            $insumoIds = $usuarioLogado->insumos->pluck('id');
+            $queryFluxoIns = \App\Models\MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->where('tipo_movimentacao', 'entrada');
+        }
+        
+        if ($dataInicio) $queryFluxoIns->where('data_movimentacao', '>=', $dataInicio);
+        if ($dataFim) $queryFluxoIns->where('data_movimentacao', '<=', $dataFim);
+
+        $fluxoInsumos = $queryFluxoIns->select(
+                DB::raw('DATE_FORMAT(data_movimentacao, "%Y-%m") as mes'),
+                DB::raw('SUM(quantidade * valor_unitario) as total_usos')
+            )
+            ->groupBy('mes')
+            ->get();
+
+        foreach ($fluxoInsumos as $uso) {
+            $mes = $uso->mes;
+            if (!isset($fluxoCaixa[$mes])) {
+                $fluxoCaixa[$mes] = [
+                    'mes' => $mes,
+                    'total_receitas' => 0,
+                    'total_despesas' => 0,
+                ];
+            }
+            $fluxoCaixa[$mes]['total_despesas'] += $uso->total_usos;
+        }
+
         ksort($fluxoCaixa);
         $fluxoCaixaCollection = collect($fluxoCaixa);
 
@@ -113,6 +171,7 @@ class RelatorioController extends Controller
         $fluxoReceitas = $fluxoCaixaCollection->pluck('total_receitas');
         $fluxoDespesas = $fluxoCaixaCollection->pluck('total_despesas');
 
+        $safrasList = $usuarioLogado->safras;
 
         return view('relatorios.index', compact(
             'relatorioLucroPorSafra',
@@ -121,7 +180,11 @@ class RelatorioController extends Controller
             'custoPorHectare',
             'fluxoLabels',
             'fluxoReceitas',
-            'fluxoDespesas'
+            'fluxoDespesas',
+            'safrasList',
+            'filtroSafra',
+            'dataInicio',
+            'dataFim'
         ));
     }
 }

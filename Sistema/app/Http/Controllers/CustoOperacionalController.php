@@ -26,7 +26,7 @@ class CustoOperacionalController extends Controller
     public function create()
     {
         $usuarioLogado = Auth::user();
-        $safras = $usuarioLogado->safras;
+        $safras = $usuarioLogado->safras()->whereNull('data_fim')->get();
         $maquinarios = $usuarioLogado->maquinarios;
         $maoDeObras = $usuarioLogado->maoDeObras;
 
@@ -38,10 +38,22 @@ class CustoOperacionalController extends Controller
         $usuarioLogado = Auth::user();
 
         $dados = $request->validate([
-            'safra_id' => 'required|exists:safras,id',
+            'safra_id' => [
+                'required',
+                'exists:safras,id',
+                function ($attribute, $value, $fail) {
+                    $safra = \App\Models\Safra::find($value);
+                    if ($safra && !empty($safra->data_fim)) {
+                        $fail('Não é possível atribuir registros a uma safra concluída.');
+                    }
+                },
+            ],
+            'categoria' => 'nullable|string|max:50',
             'descricao' => 'required|string|max:255',
             'data' => 'required|date',
             'valor' => 'required|numeric|min:0',
+            'quantidade' => 'nullable|numeric|min:0',
+            'preco_unitario' => 'nullable|numeric|min:0',
             'maquinario_id' => 'nullable|exists:maquinarios,id',
             'mao_de_obra_id' => 'nullable|exists:mao_de_obra,id',
         ]);
@@ -59,7 +71,9 @@ class CustoOperacionalController extends Controller
         $safraIds = $usuarioLogado->safras->pluck('id');
         $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
 
-        $safras = $usuarioLogado->safras;
+        $safras = $usuarioLogado->safras()->where(function($q) use ($custo) {
+            $q->whereNull('data_fim')->orWhere('id', $custo->safra_id);
+        })->get();
         $maquinarios = $usuarioLogado->maquinarios;
         $maoDeObras = $usuarioLogado->maoDeObras;
 
@@ -73,10 +87,22 @@ class CustoOperacionalController extends Controller
         $custo = CustoOperacional::whereIn('safra_id', $safraIds)->findOrFail($id);
 
         $dados = $request->validate([
-            'safra_id' => 'required|exists:safras,id',
+            'safra_id' => [
+                'required',
+                'exists:safras,id',
+                function ($attribute, $value, $fail) {
+                    $safra = \App\Models\Safra::find($value);
+                    if ($safra && !empty($safra->data_fim)) {
+                        $fail('Não é possível atribuir registros a uma safra concluída.');
+                    }
+                },
+            ],
+            'categoria' => 'nullable|string|max:50',
             'descricao' => 'required|string|max:255',
             'data' => 'required|date',
             'valor' => 'required|numeric|min:0',
+            'quantidade' => 'nullable|numeric|min:0',
+            'preco_unitario' => 'nullable|numeric|min:0',
             'maquinario_id' => 'nullable|exists:maquinarios,id',
             'mao_de_obra_id' => 'nullable|exists:mao_de_obra,id',
         ]);

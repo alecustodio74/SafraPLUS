@@ -17,6 +17,7 @@ class MovimentacaoEstoque extends Model
         'tipo_movimentacao',
         'quantidade',
         'valor_unitario',
+        'data_movimentacao',
     ];
 
     public function insumo()

@@ -35,6 +35,7 @@
                     @can('is-admin')
                     <th class="px-6 py-4">Produtor</th>
                     @endcan
+                    <th class="px-6 py-4 text-center">QTD</th>
                     <th class="px-6 py-4">Valor</th>
                     <th class="px-6 py-4 text-center">Vínculo</th>
                     <th class="px-6 py-4 text-right sticky right-0 bg-gray-50 z-10 shadow-[-12px_0_15px_-3px_rgba(0,0,0,0.05)]">Ações</th>
@@ -46,8 +47,21 @@
                     <td class="px-6 py-4 text-gray-600 whitespace-nowrap">
                         {{ \Carbon\Carbon::parse($custo->data)->format('d/m/Y') }}
                     </td>
-                    <td class="px-6 py-4 font-semibold text-gray-900">
-                        {{ $custo->descricao }}
+                    <td class="px-6 py-4">
+                        <div class="flex flex-col">
+                            @if($custo->categoria === 'mao_de_obra' || (!$custo->categoria && $custo->mao_de_obra_id))
+                                <span class="text-[10px] text-rose-600 font-bold uppercase tracking-wider mb-0.5">Mão de Obra</span>
+                            @elseif($custo->categoria === 'maquinario' || (!$custo->categoria && $custo->maquinario_id))
+                                <span class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-0.5">Maquinário</span>
+                            @elseif($custo->categoria === 'combustivel' || (!$custo->categoria && str_starts_with(strtolower($custo->descricao), 'combust')))
+                                <span class="text-[10px] text-orange-600 font-bold uppercase tracking-wider mb-0.5">Combustível</span>
+                            @elseif($custo->categoria === 'manutencao' || (!$custo->categoria && str_starts_with(strtolower($custo->descricao), 'manuten')))
+                                <span class="text-[10px] text-purple-600 font-bold uppercase tracking-wider mb-0.5">Manutenção</span>
+                            @else
+                                <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Geral / Outros</span>
+                            @endif
+                            <span class="font-semibold text-gray-900 text-sm">{{ $custo->descricao }}</span>
+                        </div>
                     </td>
                     <td class="px-6 py-4 text-gray-600">
                         {{ $custo->safra->cultura ?? 'N/A' }}
@@ -66,6 +80,9 @@
                         </div>
                     </td>
                     @endcan
+                    <td class="px-6 py-4 text-center text-gray-600 font-medium">
+                        {{ $custo->quantidade ? number_format($custo->quantidade, 2, ',', '.') : '—' }}
+                    </td>
                     <td class="px-6 py-4">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-rose-50 text-rose-700 border border-rose-100">
                             R$ {{ number_format($custo->valor, 2, ',', '.') }}
@@ -142,7 +159,20 @@
                 </div>
 
                 <div class="mb-3 pr-16">
-                    <h4 class="font-bold text-gray-900 text-base leading-tight">{{ $custo->descricao }}</h4>
+                    <div class="flex flex-col mb-1">
+                        @if($custo->categoria === 'mao_de_obra' || (!$custo->categoria && $custo->mao_de_obra_id))
+                            <span class="text-[10px] text-rose-600 font-bold uppercase tracking-wider mb-0.5">Mão de Obra</span>
+                        @elseif($custo->categoria === 'maquinario' || (!$custo->categoria && $custo->maquinario_id))
+                            <span class="text-[10px] text-blue-600 font-bold uppercase tracking-wider mb-0.5">Maquinário</span>
+                        @elseif($custo->categoria === 'combustivel' || (!$custo->categoria && str_starts_with(strtolower($custo->descricao), 'combust')))
+                            <span class="text-[10px] text-orange-600 font-bold uppercase tracking-wider mb-0.5">Combustível</span>
+                        @elseif($custo->categoria === 'manutencao' || (!$custo->categoria && str_starts_with(strtolower($custo->descricao), 'manuten')))
+                            <span class="text-[10px] text-purple-600 font-bold uppercase tracking-wider mb-0.5">Manutenção</span>
+                        @else
+                            <span class="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Geral / Outros</span>
+                        @endif
+                        <h4 class="font-bold text-gray-900 text-base leading-tight">{{ $custo->descricao }}</h4>
+                    </div>
                     <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
                         <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span class="truncate">{{ $custo->safra->cultura ?? 'N/A' }}</span>
@@ -158,9 +188,16 @@
                 </div>
 
                 <div class="mt-2 flex items-center justify-between">
-                    <span class="font-black text-lg text-rose-600">
-                        R$ {{ number_format($custo->valor, 2, ',', '.') }}
-                    </span>
+                    <div class="flex items-center gap-3">
+                        <span class="font-black text-lg text-rose-600">
+                            R$ {{ number_format($custo->valor, 2, ',', '.') }}
+                        </span>
+                        @if($custo->quantidade)
+                        <span class="text-xs font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                            QTD: {{ number_format($custo->quantidade, 2, ',', '.') }}
+                        </span>
+                        @endif
+                    </div>
                     @can('is-admin')
                     <div class="flex items-center gap-2">
                         @php

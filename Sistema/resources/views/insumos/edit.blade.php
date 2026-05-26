@@ -36,7 +36,7 @@
 
             <div class="mb-6">
                 <label for="estoque_atual" class="block text-sm font-medium text-gray-700 mb-2">Estoque Inicial / Atual</label>
-                <input type="number" step="0.01" name="estoque_atual" id="estoque_atual" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-colors outline-none" value="{{ $insumo->estoque_atual }}" placeholder="Ex: 50">
+                <input type="number" step="0.01" name="estoque_atual" id="estoque_atual" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-colors outline-none" value="{{ $insumo->estoque_atual }}" placeholder="Ex: 50" required oninvalid="this.setCustomValidity('Por favor, digite um valor numérico para a quantidade.')" oninput="this.setCustomValidity('')">
             </div>
 
             <div class="pt-2 flex items-center gap-3">

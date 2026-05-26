@@ -67,12 +67,18 @@
                 </div>
             </div>
 
-            <div class="mb-5" id="valor_unitario_wrapper" style="display: none;">
-                <label for="valor_unitario" class="block text-sm font-medium text-gray-700 mb-2">Valor Unitário</label>
-                <input type="number" step="0.01" name="valor_unitario" id="valor_unitario" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 px-4 py-3 transition-colors outline-none @error('valor_unitario') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror" value="{{ old('valor_unitario') }}" placeholder="Ex: 120,00">
-                @error('valor_unitario')
-                    <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
-                @enderror
+            <div class="flex flex-col md:flex-row gap-5 mb-5" id="valores_wrapper" style="display: none;">
+                <div class="flex-1">
+                    <label for="valor_unitario" class="block text-sm font-medium text-gray-700 mb-2">Valor Unitário</label>
+                    <input type="number" step="0.01" name="valor_unitario" id="valor_unitario" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 px-4 py-3 transition-colors outline-none @error('valor_unitario') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror" value="{{ old('valor_unitario') }}" placeholder="Ex: 120,00">
+                    @error('valor_unitario')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="flex-1">
+                    <label for="valor_total" class="block text-sm font-medium text-gray-700 mb-2">Valor Total</label>
+                    <input type="text" id="valor_total" class="w-full bg-gray-100 border border-gray-200 text-gray-600 rounded-xl px-4 py-3 cursor-not-allowed font-medium" value="R$ 0,00" disabled>
+                </div>
             </div>
 
             <div class="mb-6" id="safra_id_wrapper" style="display: none;">
@@ -103,32 +109,46 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const tipoMovimentacao = document.getElementById('tipo_movimentacao');
-        const valorUnitarioWrapper = document.getElementById('valor_unitario_wrapper');
+        const valoresWrapper = document.getElementById('valores_wrapper');
         const safraIdWrapper = document.getElementById('safra_id_wrapper');
         const valorUnitarioInput = document.getElementById('valor_unitario');
         const safraIdInput = document.getElementById('safra_id');
+        const quantidadeInput = document.getElementById('quantidade');
+        const valorTotalInput = document.getElementById('valor_total');
 
         function toggleFields() {
             const tipo = tipoMovimentacao.value;
             if (tipo === 'entrada') {
-                valorUnitarioWrapper.style.display = 'block';
+                valoresWrapper.style.display = 'flex';
                 valorUnitarioInput.required = true;
                 safraIdWrapper.style.display = 'none';
                 safraIdInput.required = false;
             } else if (tipo === 'saida') {
-                valorUnitarioWrapper.style.display = 'none';
+                valoresWrapper.style.display = 'none';
                 valorUnitarioInput.required = false;
                 safraIdWrapper.style.display = 'block';
                 safraIdInput.required = true;
             } else {
-                valorUnitarioWrapper.style.display = 'none';
+                valoresWrapper.style.display = 'none';
                 valorUnitarioInput.required = false;
                 safraIdWrapper.style.display = 'none';
                 safraIdInput.required = false;
             }
         }
+        
+        function calcularTotal() {
+            const qtd = parseFloat(quantidadeInput.value) || 0;
+            const unitario = parseFloat(valorUnitarioInput.value) || 0;
+            const total = qtd * unitario;
+            valorTotalInput.value = 'R$ ' + total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         tipoMovimentacao.addEventListener('change', toggleFields);
+        quantidadeInput.addEventListener('input', calcularTotal);
+        valorUnitarioInput.addEventListener('input', calcularTotal);
+        
         toggleFields();
+        calcularTotal();
     });
 </script>
 @endsection

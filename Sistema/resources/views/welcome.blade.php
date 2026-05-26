@@ -112,8 +112,8 @@
         <img src="{{ asset('images/logo.png') }}" alt="Logo SafraPLUS" style="width: 450px; height: auto;">
       </div>
       <div>
-        <h1 class="flex justify-center text-4xl font-bold mt-8 mb-6 text-gray-800 dark:text-white">
-          Bem vindo a SafraPLUS versão 1.0
+        <h1 class="text-center text-2xl font-bold mt-8 mb-6 text-gray-800 dark:text-white max-w-[450px] mx-auto">
+          Bem vindo ao SafraPLUS versão 1.0
         </h1>
       </div>
 

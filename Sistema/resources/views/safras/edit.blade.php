@@ -53,9 +53,30 @@
                 </div>
             </div>
 
+            <div class="mb-5">
+                <label for="propriedade" class="block text-sm font-medium text-gray-700 mb-2">Nome da Propriedade</label>
+                <input type="text" name="propriedade" id="propriedade" list="propriedades-list" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 px-4 py-3 transition-colors outline-none" value="{{ $safra->propriedade }}" placeholder="Ex: Fazenda Bela Vista">
+                <datalist id="propriedades-list">
+                    @foreach($propriedades as $prop)
+                        <option value="{{ $prop }}">
+                    @endforeach
+                </datalist>
+            </div>
+
             <div class="mb-6">
-                <label for="localizacao" class="block text-sm font-medium text-gray-700 mb-2">Localização</label>
-                <input type="text" name="localizacao" id="localizacao" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 px-4 py-3 transition-colors outline-none" value="{{ $safra->localizacao }}" placeholder="Rodovia Raposo Tavares, Km 126">
+                <div class="flex items-center gap-2 mb-2">
+                    <label for="localizacao" class="block text-sm font-medium text-gray-700">Coordenadas da Localização (Google Maps)</label>
+                    <div class="relative">
+                        <button type="button" onclick="this.nextElementSibling.classList.toggle('hidden')" class="w-5 h-5 rounded-full bg-gray-200 text-red-600 flex items-center justify-center text-xs font-bold hover:bg-gray-300 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1 shadow-sm">
+                            ?
+                        </button>
+                        <div class="absolute left-1/2 -translate-x-1/2 bottom-full mb-2 hidden w-64 bg-gray-800 text-white text-xs rounded-lg p-3 shadow-lg z-10 text-center">
+                            No Google Maps, clique com o botão direito sobre o local do plantio. Clique nos números (coordenadas) que aparecerão para copiá-los e cole aqui.
+                            <div class="absolute left-1/2 -translate-x-1/2 top-full border-4 border-transparent border-t-gray-800"></div>
+                        </div>
+                    </div>
+                </div>
+                <input type="text" name="localizacao" id="localizacao" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 px-4 py-3 transition-colors outline-none" value="{{ $safra->localizacao }}" placeholder="Ex: -15.79422, -47.88216">
             </div>
 
             <div class="pt-2 flex items-center gap-3">

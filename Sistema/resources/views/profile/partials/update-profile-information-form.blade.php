@@ -42,7 +42,7 @@
         </div>
 
         <div class="pt-2 flex justify-end">
-            <button type="submit" class="px-6 py-2.5 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-900 transition-colors shadow-sm">
+            <button type="submit" class="px-6 py-2.5 bg-emerald-600 text-white font-semibold rounded-xl hover:bg-emerald-700 transition-colors shadow-sm">
                 Salvar Alterações
             </button>
         </div>

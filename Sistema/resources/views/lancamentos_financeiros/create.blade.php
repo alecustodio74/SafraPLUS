@@ -76,6 +76,28 @@
                 @enderror
             </div>
 
+            <div class="flex flex-col md:flex-row gap-5 mb-5">
+                <div class="flex-1">
+                    <label for="quantidade" class="block text-sm font-medium text-gray-700 mb-2">Quantidade</label>
+                    <input type="number" step="0.01" name="quantidade" id="quantidade" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-colors outline-none @error('quantidade') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror" value="{{ old('quantidade') }}" placeholder="Ex: 100">
+                    @error('quantidade')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+                <div class="flex-1">
+                    <label for="preco_unitario" class="block text-sm font-medium text-gray-700 mb-2">Preço Unitário</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 font-medium">R$</span>
+                        </div>
+                        <input type="number" step="0.01" name="preco_unitario" id="preco_unitario" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 pl-11 pr-4 py-3 transition-colors outline-none @error('preco_unitario') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror" value="{{ old('preco_unitario') }}" placeholder="0,00">
+                    </div>
+                    @error('preco_unitario')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
             <div class="mb-6">
                 <label for="valor_total" class="block text-sm font-medium text-gray-700 mb-2">Valor Total</label>
                 <div class="relative">
@@ -89,6 +111,33 @@
                 @enderror
             </div>
 
+            <!-- Campos específicos para Vendas (Receita) -->
+            <div id="campos_receita" class="hidden space-y-5 mb-5 bg-blue-50 p-5 rounded-xl border border-blue-100">
+                <h4 class="text-blue-800 font-medium mb-2">Detalhes da Venda</h4>
+                <div class="flex flex-col md:flex-row gap-5">
+                    <div class="flex-1">
+                        <label for="comprador" class="block text-sm font-medium text-gray-700 mb-2">Comprador (Opcional)</label>
+                        <input type="text" name="comprador" id="comprador" class="w-full bg-white border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 px-4 py-3 transition-colors outline-none @error('comprador') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror" value="{{ old('comprador') }}" placeholder="Nome do Comprador">
+                        @error('comprador')
+                            <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+                <div>
+                    <label for="desconto_taxa" class="block text-sm font-medium text-gray-700 mb-2">Descontos ou Taxas</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                            <span class="text-gray-500 font-medium">R$</span>
+                        </div>
+                        <input type="number" step="0.01" name="desconto_taxa" id="desconto_taxa" class="w-full bg-white border border-gray-200 text-gray-900 rounded-xl focus:ring-blue-500 focus:border-blue-500 pl-11 pr-4 py-3 transition-colors outline-none @error('desconto_taxa') border-red-500 focus:border-red-500 focus:ring-red-500 @enderror" value="{{ old('desconto_taxa') }}" placeholder="0,00">
+                    </div>
+                    <p class="mt-1 text-xs text-gray-500">Este valor será subtraído do Valor Total para calcular o Valor Líquido.</p>
+                    @error('desconto_taxa')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
             <div class="pt-2 flex items-center gap-3">
                 <button type="submit" class="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
                     Salvar Lançamento
@@ -100,4 +149,37 @@
         </form>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectTipo = document.getElementById('tipo_receita_custo');
+        const camposReceita = document.getElementById('campos_receita');
+
+        function toggleCampos() {
+            if (selectTipo.value === 'receita') {
+                camposReceita.classList.remove('hidden');
+            } else {
+                camposReceita.classList.add('hidden');
+            }
+        }
+
+        selectTipo.addEventListener('change', toggleCampos);
+        toggleCampos(); // run on load
+
+        const inputQuantidade = document.getElementById('quantidade');
+        const inputPreco = document.getElementById('preco_unitario');
+        const inputValorTotal = document.getElementById('valor_total');
+
+        function calcularTotal() {
+            const qtd = parseFloat(inputQuantidade.value);
+            const preco = parseFloat(inputPreco.value);
+            if (!isNaN(qtd) && !isNaN(preco)) {
+                inputValorTotal.value = (qtd * preco).toFixed(2);
+            }
+        }
+
+        inputQuantidade.addEventListener('input', calcularTotal);
+        inputPreco.addEventListener('input', calcularTotal);
+    });
+</script>
 @endsection

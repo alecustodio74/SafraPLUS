@@ -41,9 +41,9 @@
             <div class="flex-[0.4] sm:flex-1"></div>
             <div class="w-full max-w-sm mx-auto flex-none py-8">
                 <!-- Logo Topo -->
-                <div class="mb-10 text-center sm:text-left">
+                <div class="mb-10 text-center flex justify-center">
                     <a href="/" class="inline-block">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo SafraPLUS" class="h-10 w-auto" style="height: 40px; width: auto;">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SafraPLUS" class="w-auto" style="height: 52px; width: auto;">
                     </a>
                 </div>
 

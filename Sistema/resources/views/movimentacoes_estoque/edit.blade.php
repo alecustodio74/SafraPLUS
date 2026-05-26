@@ -58,9 +58,15 @@
                 </div>
             </div>
 
-            <div class="mb-5" id="valor_unitario_wrapper" style="display: none;">
-                <label for="valor_unitario" class="block text-sm font-medium text-gray-700 mb-2">Valor Unitário (Obrigatório p/ Entrada)</label>
-                <input type="number" step="0.01" name="valor_unitario" id="valor_unitario" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 px-4 py-3 transition-colors outline-none" value="{{ $movimentacao->valor_unitario }}">
+            <div class="flex flex-col md:flex-row gap-5 mb-5" id="valores_wrapper" style="display: none;">
+                <div class="flex-1">
+                    <label for="valor_unitario" class="block text-sm font-medium text-gray-700 mb-2">Valor Unitário (Obrigatório p/ Entrada)</label>
+                    <input type="number" step="0.01" name="valor_unitario" id="valor_unitario" class="w-full bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 px-4 py-3 transition-colors outline-none" value="{{ $movimentacao->valor_unitario }}">
+                </div>
+                <div class="flex-1">
+                    <label for="valor_total" class="block text-sm font-medium text-gray-700 mb-2">Valor Total</label>
+                    <input type="text" id="valor_total" class="w-full bg-gray-100 border border-gray-200 text-gray-600 rounded-xl px-4 py-3 cursor-not-allowed font-medium" value="R$ 0,00" disabled>
+                </div>
             </div>
 
             <div class="mb-6" id="safra_id_wrapper" style="display: none;">
@@ -91,34 +97,47 @@
     document.addEventListener('DOMContentLoaded', function() {
 
         const tipoMovimentacao = document.getElementById('tipo_movimentacao');
-        const valorUnitarioWrapper = document.getElementById('valor_unitario_wrapper');
+        const valoresWrapper = document.getElementById('valores_wrapper');
         const safraIdWrapper = document.getElementById('safra_id_wrapper');
         const valorUnitarioInput = document.getElementById('valor_unitario');
         const safraIdInput = document.getElementById('safra_id');
+        const quantidadeInput = document.getElementById('quantidade');
+        const valorTotalInput = document.getElementById('valor_total');
 
         function toggleFields() {
             const tipo = tipoMovimentacao.value;
 
             if (tipo === 'entrada') {
-                valorUnitarioWrapper.style.display = 'block';
+                valoresWrapper.style.display = 'flex';
                 safraIdWrapper.style.display = 'none';
                 valorUnitarioInput.required = true;
                 safraIdInput.required = false;
             } else if (tipo === 'saida') {
-                valorUnitarioWrapper.style.display = 'none';
+                valoresWrapper.style.display = 'none';
                 safraIdWrapper.style.display = 'block';
                 valorUnitarioInput.required = false;
                 safraIdInput.required = true;
             } else {
-                valorUnitarioWrapper.style.display = 'none';
+                valoresWrapper.style.display = 'none';
                 safraIdWrapper.style.display = 'none';
                 valorUnitarioInput.required = false;
                 safraIdInput.required = false;
             }
         }
+        
+        function calcularTotal() {
+            const qtd = parseFloat(quantidadeInput.value) || 0;
+            const unitario = parseFloat(valorUnitarioInput.value) || 0;
+            const total = qtd * unitario;
+            valorTotalInput.value = 'R$ ' + total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
         tipoMovimentacao.addEventListener('change', toggleFields);
+        quantidadeInput.addEventListener('input', calcularTotal);
+        valorUnitarioInput.addEventListener('input', calcularTotal);
 
         toggleFields();
+        calcularTotal();
     });
 </script>
 @endsection

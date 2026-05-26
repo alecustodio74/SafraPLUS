@@ -21,6 +21,10 @@ Route::get('/painel', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('painel');
 
+Route::get('/saldo-resumo', [DashboardController::class, 'saldoResumo'])
+    ->middleware(['auth', 'verified'])
+    ->name('saldo-resumo');
+
 Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

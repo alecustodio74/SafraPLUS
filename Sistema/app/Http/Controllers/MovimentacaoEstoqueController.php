@@ -27,7 +27,7 @@ class MovimentacaoEstoqueController extends Controller
     {
         $usuarioLogado = Auth::user();
         $insumos = $usuarioLogado->insumos;
-        $safras = $usuarioLogado->safras;
+        $safras = $usuarioLogado->safras()->whereNull('data_fim')->get();
 
         return view('movimentacoes_estoque.create', compact('insumos', 'safras'));
     }
@@ -41,7 +41,19 @@ class MovimentacaoEstoqueController extends Controller
             'insumo_id' => 'required|exists:insumos,id',
             'quantidade' => 'required|numeric|min:0.01',
             'valor_unitario' => ['nullable', 'numeric', 'min:0', Rule::requiredIf($request->tipo_movimentacao == 'entrada')],
-            'safra_id' => ['nullable', 'exists:safras,id', Rule::requiredIf($request->tipo_movimentacao == 'saida')],
+            'safra_id' => [
+                'nullable',
+                'exists:safras,id',
+                Rule::requiredIf($request->tipo_movimentacao == 'saida'),
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        $safra = \App\Models\Safra::find($value);
+                        if ($safra && !empty($safra->data_fim)) {
+                            $fail('Não é possível atribuir registros a uma safra concluída.');
+                        }
+                    }
+                },
+            ],
             'data_movimentacao' => 'required|date',
         ]);
 
@@ -59,6 +71,12 @@ class MovimentacaoEstoqueController extends Controller
                 return back()->with('error', 'Estoque insuficiente para esta saída.')->withInput();
             }
             $insumo->estoque_atual -= $dados['quantidade'];
+            
+            // Calculate average cost from previous entradas for this insumo
+            $avgPrice = MovimentacaoEstoque::where('insumo_id', $insumo->id)
+                ->where('tipo_movimentacao', 'entrada')
+                ->avg('valor_unitario');
+            $dados['valor_unitario'] = $avgPrice ?? 0;
         }
 
         $insumo->save();
@@ -73,7 +91,9 @@ class MovimentacaoEstoqueController extends Controller
         $insumoIds = $usuarioLogado->insumos->pluck('id');
         $movimentacao = MovimentacaoEstoque::whereIn('insumo_id', $insumoIds)->findOrFail($id);
         $insumos = $usuarioLogado->insumos;
-        $safras = $usuarioLogado->safras;
+        $safras = $usuarioLogado->safras()->where(function($q) use ($movimentacao) {
+            $q->whereNull('data_fim')->orWhere('id', $movimentacao->safra_id);
+        })->get();
 
         return view('movimentacoes_estoque.edit', compact('movimentacao', 'insumos', 'safras'));
     }
@@ -89,9 +109,51 @@ class MovimentacaoEstoqueController extends Controller
             'insumo_id' => 'required|exists:insumos,id',
             'quantidade' => 'required|numeric|min:0.01',
             'valor_unitario' => ['nullable', 'numeric', 'min:0', Rule::requiredIf($request->tipo_movimentacao == 'entrada')],
-            'safra_id' => ['nullable', 'exists:safras,id', Rule::requiredIf($request->tipo_movimentacao == 'saida')],
+            'safra_id' => [
+                'nullable',
+                'exists:safras,id',
+                Rule::requiredIf($request->tipo_movimentacao == 'saida'),
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        $safra = \App\Models\Safra::find($value);
+                        if ($safra && !empty($safra->data_fim)) {
+                            $fail('Não é possível atribuir registros a uma safra concluída.');
+                        }
+                    }
+                },
+            ],
             'data_movimentacao' => 'required|date',
         ]);
+
+        $oldInsumo = $movimentacao->insumo;
+        if ($movimentacao->tipo_movimentacao == 'entrada') {
+            $oldInsumo->estoque_atual -= $movimentacao->quantidade;
+        } else {
+            $oldInsumo->estoque_atual += $movimentacao->quantidade;
+        }
+        $oldInsumo->save();
+
+        $newInsumo = Insumo::findOrFail($dados['insumo_id']);
+        if ($dados['tipo_movimentacao'] == 'entrada') {
+            $newInsumo->estoque_atual += $dados['quantidade'];
+        } else {
+            if ($newInsumo->estoque_atual < $dados['quantidade']) {
+                if ($movimentacao->tipo_movimentacao == 'entrada') {
+                    $oldInsumo->estoque_atual += $movimentacao->quantidade;
+                } else {
+                    $oldInsumo->estoque_atual -= $movimentacao->quantidade;
+                }
+                $oldInsumo->save();
+                return back()->with('error', 'Estoque insuficiente para esta saída.')->withInput();
+            }
+            $newInsumo->estoque_atual -= $dados['quantidade'];
+            
+            $avgPrice = MovimentacaoEstoque::where('insumo_id', $newInsumo->id)
+                ->where('tipo_movimentacao', 'entrada')
+                ->avg('valor_unitario');
+            $dados['valor_unitario'] = $avgPrice ?? 0;
+        }
+        $newInsumo->save();
 
         $movimentacao->update($dados);
 

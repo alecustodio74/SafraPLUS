@@ -37,7 +37,7 @@
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-100 text-xs uppercase tracking-wider text-gray-500 font-bold">
                     <th class="px-6 py-4">Nome / Tipo</th>
-                    <th class="px-6 py-4">Custo (Diário/Hora)</th>
+                    <th class="px-6 py-4">Custo (Diário)</th>
                     @can('is-admin')
                     <th class="px-6 py-4">Produtor</th>
                     @endcan
@@ -122,7 +122,7 @@
 
                 <div class="mt-2 flex items-center justify-between">
                     <div>
-                        <span class="text-[10px] text-gray-400 uppercase font-black block mb-0.5">Custo Diário/Hora</span>
+                        <span class="text-[10px] text-gray-400 uppercase font-black block mb-0.5">Custo Diário</span>
                         <span class="font-black text-lg text-indigo-700 leading-none">
                             R$ {{ number_format($item->custo_diario_hora, 2, ',', '.') }}
                         </span>

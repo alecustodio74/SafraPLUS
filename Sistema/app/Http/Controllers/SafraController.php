@@ -19,12 +19,19 @@ class SafraController extends Controller
 
     public function create()
     {
+        $usuarioLogado = Auth::user();
         $culturasPredefinidas = ['Soja', 'Milho', 'Trigo', 'Arroz', 'Feijão', 'Cana-de-açúcar', 'Algodão', 'Amendoim', 'Sorgo', 'Café'];
         $culturasNoBanco = Safra::select('cultura')->distinct()->pluck('cultura')->toArray();
         $culturas = array_unique(array_merge($culturasPredefinidas, $culturasNoBanco));
         sort($culturas);
 
-        return view('safras.create', compact('culturas'));
+        $propriedades = $usuarioLogado->safras()->whereNotNull('propriedade')->where('propriedade', '!=', '')->distinct()->pluck('propriedade')->toArray();
+        if ($usuarioLogado->propriedade && !in_array($usuarioLogado->propriedade, $propriedades)) {
+            $propriedades[] = $usuarioLogado->propriedade;
+        }
+        sort($propriedades);
+
+        return view('safras.create', compact('culturas', 'propriedades'));
     }
 
     public function store(Request $request)
@@ -56,7 +63,13 @@ class SafraController extends Controller
         $culturas = array_unique(array_merge($culturasPredefinidas, $culturasNoBanco));
         sort($culturas);
 
-        return view('safras.edit', compact('safra', 'culturas'));
+        $propriedades = $usuarioLogado->safras()->whereNotNull('propriedade')->where('propriedade', '!=', '')->distinct()->pluck('propriedade')->toArray();
+        if ($usuarioLogado->propriedade && !in_array($usuarioLogado->propriedade, $propriedades)) {
+            $propriedades[] = $usuarioLogado->propriedade;
+        }
+        sort($propriedades);
+
+        return view('safras.edit', compact('safra', 'culturas', 'propriedades'));
     }
 
     public function update(Request $request, $id)

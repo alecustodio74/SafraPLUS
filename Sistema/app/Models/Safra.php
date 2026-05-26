@@ -20,6 +20,7 @@ class Safra extends Model
         'produtor_id',
         'cultura',
         'area_plantada',
+        'propriedade',
         'data_inicio',
         'data_fim',
         'localizacao',
